@@ -8,8 +8,10 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.Plugin;
 import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.games.Game;
@@ -32,6 +34,21 @@ public class GeneralEvents implements Listener {
         event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GREEN + "Welcome!"));
         event.getPlayer().playSound(event.getPlayer(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
         event.getPlayer().setRotation(180, 0);
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        event.setRespawnLocation(event.getPlayer().getWorld().getSpawnLocation());
+        event.getPlayer().setRotation(180, 0);
+        event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You died..."));
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity().getScoreboardTags().contains("axe")) {
+            event.setCancelled(true);
+            System.out.println("hmmmmm");
+        }
     }
 
     @EventHandler

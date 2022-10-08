@@ -18,6 +18,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.games.FFA;
+import us.xylight.pvp.games.ffakits.AxeKit;
+import us.xylight.pvp.games.ffakits.SwordKit;
 import us.xylight.pvp.menus.Menu;
 import us.xylight.pvp.menus.MenuItem;
 
@@ -40,7 +42,7 @@ public class MenuHandler implements Listener {
 
         gameMenuItems = new MenuItem[]{
                 new MenuItem(arenaItem, "&bFFA", 11, pl,
-                        event -> pl.ffa.joinFFA((Player) event.getWhoClicked()) ),
+                        event -> openFFAMenu((Player) event.getWhoClicked()) ),
                 new MenuItem(multiplayerItem, "&9Multiplayer", 13, pl,
                         event -> openMultiplayerMenu((Player) event.getWhoClicked()))
         };
@@ -87,6 +89,18 @@ public class MenuHandler implements Listener {
     public void openMultiplayerMenu(Player p) {
         Menu multiplayerMenu = new Menu(multiplayerMenuItems, 3, p, "Multiplayer");
         p.openInventory(multiplayerMenu.inventory);
+    }
+
+    public void openFFAMenu(Player p) {
+        MenuItem[] ffaMenuItems = new MenuItem[] {
+                new MenuItem(getItem(new ItemStack(Material.DIAMOND_AXE), "&bAxe", "&7Click to queue"), "&bAxe", 11, pl,
+                        event -> pl.ffa.joinFFA((Player) event.getWhoClicked(), new AxeKit((Player) event.getWhoClicked()))),
+                new MenuItem(getItem(new ItemStack(Material.DIAMOND_SWORD), "&bSword", "&7Click to queue"), "&bSword", 13, pl,
+                        event -> pl.ffa.joinFFA((Player) event.getWhoClicked(), new SwordKit((Player) event.getWhoClicked())))
+        };
+
+        Menu ffaMenu = new Menu(ffaMenuItems, 3, p, "FFA");
+        p.openInventory(ffaMenu.inventory);
     }
 
     @EventHandler

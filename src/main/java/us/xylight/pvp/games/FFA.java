@@ -14,10 +14,8 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import us.xylight.pvp.XyPVP;
-import us.xylight.pvp.handlers.LobbyHandler;
+import us.xylight.pvp.games.ffakits.FFAKit;
 import us.xylight.pvp.util.Clamp;
 
 import java.util.*;
@@ -25,7 +23,7 @@ import java.util.*;
 public class FFA implements Listener {
 
     public XyPVP plugin;
-    ItemStack[] gameInventory;
+    ItemStack[] axeInventory;
 
     Random rand = new Random();
 
@@ -36,7 +34,8 @@ public class FFA implements Listener {
     public FFA(Plugin p) {
         this.plugin = (XyPVP) p;
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        gameInventory = new ItemStack[]{
+
+        axeInventory = new ItemStack[]{
             new ItemStack(Material.IRON_SWORD),
                     new ItemStack(Material.BOW),
                     new ItemStack(Material.ARROW, 12),
@@ -114,11 +113,12 @@ public class FFA implements Listener {
     @EventHandler
     public void onKill(PlayerDeathEvent event) {
         if (players.contains(event.getEntity())) {
+            event.getDrops().clear();
             resetOnDeath(event.getEntity());
         }
     }
 
-    public void joinFFA(Player p) {
+    public void joinFFA(Player p, FFAKit kit) {
 
         Location[] spawnLocations = new Location[] {
                 new Location(p.getWorld(), 67, 4, 98),
@@ -126,14 +126,8 @@ public class FFA implements Listener {
                 new Location(p.getWorld(), 178, 4, 98)
         };
 
-        p.getInventory().setContents(gameInventory);
-
-        p.getInventory().setArmorContents(new ItemStack[]{
-                new ItemStack(Material.IRON_BOOTS),
-                new ItemStack(Material.IRON_LEGGINGS),
-                new ItemStack(Material.IRON_CHESTPLATE),
-                new ItemStack(Material.IRON_HELMET)
-        });
+        kit.setContents(p);
+        p.getInventory().setItem(8, plugin.menuHandler.getItem(new ItemStack(Material.BARRIER), ChatColor.translateAlternateColorCodes('&', "&cLeave"), "Leave the game."));
 
         p.teleport(spawnLocations[rand.nextInt(spawnLocations.length)]);
 

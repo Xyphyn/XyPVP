@@ -1,0 +1,14 @@
+name: PvPArena
+version: '0.1.0'
+main: us.xylight.pvp.XyPVP
+api-version: 1.19
+commands:
+  worldprotect:
+    description: Toggles world protect on or off.
+    usage: /worldprotect
+  test:
+    description: ???
+    usage: ???
+  lobbyinvtoggle:
+    description: Toggle lobby inventory
+    usage: /lobbyinvtoggle

@@ -25,7 +25,7 @@ public class Menu {
         inventory = Bukkit.createInventory(player, 9 * rows, this.invName);
 
         for (MenuItem item : items) {
-            inventory.setItem(item.location, getItem(item.item, item.name, ""));
+            inventory.setItem(item.location, item.item);
         }
     }
 

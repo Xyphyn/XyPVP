@@ -71,7 +71,7 @@ public class GeneralEvents implements Listener {
             }
         }
 
-        pl.ffa.killMap.remove(event.getPlayer());
+        pl.ffa.killMap.remove(event.getPlayer().getUniqueId());
         pl.ffa.players.remove(event.getPlayer());
     }
 }

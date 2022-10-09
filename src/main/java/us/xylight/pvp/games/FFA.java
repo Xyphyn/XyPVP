@@ -9,12 +9,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
 import us.xylight.pvp.XyPVP;
+import us.xylight.pvp.games.ffakits.abilities.Ability;
 import us.xylight.pvp.games.ffakits.FFAKit;
 import us.xylight.pvp.util.Clamp;
 
@@ -27,9 +30,10 @@ public class FFA implements Listener {
 
     Random rand = new Random();
 
-    public Map<Player, Integer> killMap = new HashMap<>();
+    public Map<UUID, Integer> killMap = new HashMap<>();
     public ArrayList<Player> players = new ArrayList<>();
     public Map<UUID, Long> cooldowns = new HashMap<>();
+    public Map<UUID, Ability> abilities = new HashMap<>();
 
     public FFA(Plugin p) {
         this.plugin = (XyPVP) p;
@@ -55,7 +59,7 @@ public class FFA implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
+        if (event.getEntity() instanceof Player && players.contains(event.getEntity())) {
             Player p = (Player) event.getEntity();
             cooldowns.put(p.getUniqueId(), System.currentTimeMillis() + 10000);
         }
@@ -101,10 +105,13 @@ public class FFA implements Listener {
         players.remove(p);
         killMap.remove(p);
         cooldowns.remove(p.getUniqueId());
+        for (PotionEffect effect : p.getActivePotionEffects()) {
+            p.removePotionEffect(effect.getType());
+        }
         if (p.getKiller() != null) {
 //            p.getKiller().addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 10));
             p.getKiller().setHealth(Clamp.clamp((int) (p.getKiller().getHealth() + 10), 0, 20));
-            p.getKiller().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GREEN + "+1 Kill" + ChatColor.RESET + " | " + ChatColor.RED + "❤ +10"));
+            p.getKiller().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GREEN + "+1 Kill" + ChatColor.RESET + " | " + ChatColor.RED + "❤ +10" + ChatColor.RESET + " | " + ChatColor.BLUE + killMap.get(p.getKiller().getUniqueId()) + (killMap.get(p.getKiller().getUniqueId()).equals(1) ? " kill" : " kills")));
             p.getKiller().playSound(p.getKiller(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
         }
         p.teleport(p.getWorld().getSpawnLocation());
@@ -113,9 +120,18 @@ public class FFA implements Listener {
     @EventHandler
     public void onKill(PlayerDeathEvent event) {
         if (players.contains(event.getEntity())) {
+            if (event.getEntity().getKiller() != null) {
+                killMap.put(event.getEntity().getKiller().getUniqueId(), killMap.get(event.getEntity().getKiller().getUniqueId()) + 1);
+                System.out.println(killMap.get(event.getEntity().getKiller().getUniqueId()));
+            }
             event.getDrops().clear();
             resetOnDeath(event.getEntity());
         }
+    }
+
+    @EventHandler
+    public void onFoodDeplete(FoodLevelChangeEvent event) {
+        event.setCancelled(true);
     }
 
     public void joinFFA(Player p, FFAKit kit) {
@@ -131,7 +147,14 @@ public class FFA implements Listener {
 
         p.teleport(spawnLocations[rand.nextInt(spawnLocations.length)]);
 
-        killMap.put(p, 0);
+        if (abilities.get(p.getUniqueId()) != null) {
+            Ability ability = abilities.get(p.getUniqueId());
+            p.getActivePotionEffects().removeAll(p.getActivePotionEffects());
+            p.addPotionEffect(ability.effect);
+            ability.setPenalty(p);
+        }
+
+        killMap.put(p.getUniqueId(), 0);
         players.add(p);
     }
 }

@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.games.*;
 
 import java.util.*;
@@ -12,9 +13,9 @@ import java.util.*;
 public class QueueHandler {
     public ArrayList<Game> games = new ArrayList<>();
     public Map<UUID, QueueTypes> queue = new HashMap<>();
-    Plugin plugin;
+    XyPVP plugin;
     public QueueHandler(Plugin pl) {
-        this.plugin = pl;
+        this.plugin = (XyPVP) pl;
     }
     public void queue(Player p, QueueTypes type) {
         p.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format("&aQueueing %s", type.toString())));
@@ -35,6 +36,9 @@ public class QueueHandler {
                     if (player.equals(queuer)) return;
                     queue.remove(p);
                     queue.remove(queuer.getUniqueId());
+                    if (plugin.ffa.players.contains(player)) {
+                        plugin.ffa.resetOnDeath(player);
+                    }
 
                     if (type == QueueTypes.SURVIVAL) {
                         games.add(new Survival(new Player[]{player, queuer}, plugin, new UUID[]{p, queuer.getUniqueId()}));

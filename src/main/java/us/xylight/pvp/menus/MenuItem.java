@@ -37,4 +37,8 @@ public class MenuItem implements Listener {
             event.setCancelled(true);
         }
     }
+
+    public void closed() {
+
+    }
 }

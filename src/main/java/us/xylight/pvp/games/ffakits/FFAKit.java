@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 public class FFAKit {
     public ItemStack[] contents;
     public ItemStack[] armorContents;
+    public String name = "";
 
     ItemStack enchant(ItemStack item, Enchantment enchantment, int level) {
         item.addEnchantment(enchantment, level);

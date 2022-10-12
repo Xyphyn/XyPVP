@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public class SwordKit extends FFAKit {
     public SwordKit(Player player) {
         super(player);
+        this.name = "Knight";
     }
 
     @Override

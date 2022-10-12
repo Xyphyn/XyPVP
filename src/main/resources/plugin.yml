@@ -12,3 +12,6 @@ commands:
   lobbyinvtoggle:
     description: Toggle lobby inventory
     usage: /lobbyinvtoggle
+  setrank:
+    description: Sets a player's rank
+    usage: /setrank <player> <rank>

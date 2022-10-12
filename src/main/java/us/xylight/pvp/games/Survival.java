@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public class Survival extends Game {
 
-    public Survival(Player[] plyers, Plugin pl, UUID[] playerUUIDs) {
-        super(plyers, pl, playerUUIDs);
+    public Survival(Player[] plyers, UUID[] playerUUIDs) {
+        super(plyers, playerUUIDs);
 
         this.gameInventory = new ItemStack[] {
                 new ItemStack(Material.IRON_SWORD),

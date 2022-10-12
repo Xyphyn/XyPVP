@@ -16,8 +16,8 @@ public class OP extends Game {
         return item;
     }
 
-    public OP(Player[] plyers, Plugin pl, UUID[] playerUUIDs) {
-        super(plyers, pl, playerUUIDs);
+    public OP(Player[] plyers, UUID[] playerUUIDs) {
+        super(plyers, playerUUIDs);
 
         this.gameInventory = new ItemStack[] {
                 enchant(new ItemStack(Material.DIAMOND_SWORD), Enchantment.DAMAGE_ALL, 2),

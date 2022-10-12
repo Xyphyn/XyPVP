@@ -8,8 +8,8 @@ import org.bukkit.plugin.Plugin;
 import java.util.UUID;
 
 public class Axe extends Game {
-    public Axe(Player[] plyers, Plugin pl, UUID[] playerUUIDs) {
-        super(plyers, pl, playerUUIDs);
+    public Axe(Player[] plyers, UUID[] playerUUIDs) {
+        super(plyers, playerUUIDs);
 
         this.gameInventory = new ItemStack[] {
                 new ItemStack(Material.IRON_AXE),

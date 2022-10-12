@@ -13,9 +13,8 @@ import java.util.*;
 public class QueueHandler {
     public ArrayList<Game> games = new ArrayList<>();
     public Map<UUID, QueueTypes> queue = new HashMap<>();
-    XyPVP plugin;
-    public QueueHandler(Plugin pl) {
-        this.plugin = (XyPVP) pl;
+    public QueueHandler() {
+
     }
     public void queue(Player p, QueueTypes type) {
         p.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format("&aQueueing %s", type.toString())));
@@ -36,24 +35,24 @@ public class QueueHandler {
                     if (player.equals(queuer)) return;
                     queue.remove(p);
                     queue.remove(queuer.getUniqueId());
-                    if (plugin.ffa.players.contains(player)) {
-                        plugin.ffa.resetOnDeath(player);
+                    if (XyPVP.getInstance().ffa.players.contains(player)) {
+                        XyPVP.getInstance().ffa.resetOnDeath(player);
                     }
 
                     if (type == QueueTypes.SURVIVAL) {
-                        games.add(new Survival(new Player[]{player, queuer}, plugin, new UUID[]{p, queuer.getUniqueId()}));
+                        games.add(new Survival(new Player[]{player, queuer}, new UUID[]{p, queuer.getUniqueId()}));
                     }
                     if (type == QueueTypes.OP) {
-                        games.add(new OP(new Player[]{player, queuer}, plugin, new UUID[]{p, queuer.getUniqueId()}));
+                        games.add(new OP(new Player[]{player, queuer}, new UUID[]{p, queuer.getUniqueId()}));
                     }
                     if (type == QueueTypes.SUMO) {
-                        games.add(new Sumo(new Player[]{player, queuer}, plugin, new UUID[]{p, queuer.getUniqueId()}));
+                        games.add(new Sumo(new Player[]{player, queuer}, new UUID[]{p, queuer.getUniqueId()}));
                     }
                     if (type == QueueTypes.WALLS) {
-                        games.add(new Walls(new Player[]{player, queuer}, plugin, new UUID[]{p, queuer.getUniqueId()}));
+                        games.add(new Walls(new Player[]{player, queuer}, new UUID[]{p, queuer.getUniqueId()}));
                     }
                     if (type == QueueTypes.AXE) {
-                        games.add(new Axe(new Player[]{player, queuer}, plugin, new UUID[]{p, queuer.getUniqueId()}));
+                        games.add(new Axe(new Player[]{player, queuer}, new UUID[]{p, queuer.getUniqueId()}));
                     }
                 }
             }

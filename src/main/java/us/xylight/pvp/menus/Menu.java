@@ -11,22 +11,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.xylight.pvp.XyPVP;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Menu {
     public Inventory inventory;
     public String invName;
     public XyPVP plugin;
-
-    // Probably a bad way to do this, but locations and stacks must be the same length.
-
     public Menu(MenuItem[] items, int rows, Player player, String invName) {
         this.invName = invName;
         inventory = Bukkit.createInventory(player, 9 * rows, this.invName);
 
-        for (MenuItem item : items) {
-            inventory.setItem(item.location, item.item);
-        }
+        for (MenuItem item : items) inventory.setItem(item.location, item.item);
     }
 
     private ItemStack getItem(ItemStack item, String name, String ... lore) {
@@ -35,10 +31,7 @@ public class Menu {
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
 
         List<String> lores = new ArrayList<>();
-        for (String s : lore) {
-            lores.add(ChatColor.translateAlternateColorCodes('&', s));
-
-        }
+        for (String s : lore) lores.add(ChatColor.translateAlternateColorCodes('&', s));
         meta.setLore(lores);
 
         item.setItemMeta(meta);

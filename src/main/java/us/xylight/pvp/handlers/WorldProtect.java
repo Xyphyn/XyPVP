@@ -13,10 +13,9 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class WorldProtect implements Listener {
-    XyPVP plugin;
     public WorldProtect(XyPVP plugin) {
-        this.plugin = plugin;
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+
+        Bukkit.getPluginManager().registerEvents(this, XyPVP.getInstance());
     }
 
     // [x1, x2], [z1, z2]
@@ -26,7 +25,7 @@ public class WorldProtect implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if (!enabled) return;
-        for (Game game : plugin.queueHandler.games) {
+        for (Game game : XyPVP.getInstance().queueHandler.games) {
             if (Arrays.asList(game.players).contains(event.getPlayer())) {
                 event.setCancelled(false);
                 return;

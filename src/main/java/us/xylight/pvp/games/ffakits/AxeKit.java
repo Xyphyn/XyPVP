@@ -9,6 +9,7 @@ import us.xylight.pvp.games.Axe;
 public class AxeKit extends FFAKit {
     public AxeKit(Player player) {
         super(player);
+        this.name = "Axe";
     }
 
     @Override

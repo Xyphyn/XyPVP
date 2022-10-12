@@ -2,6 +2,7 @@ package us.xylight.pvp.handlers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
 import java.util.Map;
@@ -32,5 +33,9 @@ public class ScoreboardHandler {
                 score.setScore(0);
             });
         }
+    }
+
+    public void setPlayerScoreboard(Player p, String title, String[] lines) {
+
     }
 }

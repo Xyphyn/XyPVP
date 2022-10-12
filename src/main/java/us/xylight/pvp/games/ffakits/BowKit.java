@@ -10,6 +10,7 @@ public class BowKit extends FFAKit {
 
     public BowKit(Player player) {
         super(player);
+        this.name = "Archer";
     }
 
     @Override

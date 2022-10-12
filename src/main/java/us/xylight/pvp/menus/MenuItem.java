@@ -18,12 +18,12 @@ public class MenuItem implements Listener {
     public String name;
     public int location;
     private Consumer<InventoryClickEvent> consumer;
-    public MenuItem(ItemStack item, String name, int location, XyPVP pl, Consumer<InventoryClickEvent> consumer) {
+    public MenuItem(ItemStack item, String name, int location, Consumer<InventoryClickEvent> consumer) {
         this.item = item;
         this.name = name;
         this.location = location;
         this.consumer = consumer;
-        Bukkit.getPluginManager().registerEvents(this, pl);
+        Bukkit.getPluginManager().registerEvents(this, XyPVP.getInstance());
     }
 
     public void onClick(InventoryClickEvent event) {

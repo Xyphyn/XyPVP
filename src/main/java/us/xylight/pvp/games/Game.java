@@ -35,15 +35,13 @@ public class Game implements Listener {
     public Player[] players;
     public UUID[] playerUUIDs;
     public ArrayList<Block> trackedBlocks = new ArrayList<>();
-    XyPVP plugin;
     int x;
     int y;
     int z;
     boolean gameStarted;
 
-    public Game(Player[] plyers, Plugin pl, UUID[] playerUUIDs) {
-        Bukkit.getPluginManager().registerEvents(this, pl);
-        this.plugin = (XyPVP) pl;
+    public Game(Player[] plyers, UUID[] playerUUIDs) {
+        Bukkit.getPluginManager().registerEvents(this, XyPVP.getInstance());
         this.playerUUIDs = playerUUIDs;
 
         x = rand.nextInt(100000);
@@ -55,22 +53,32 @@ public class Game implements Listener {
         World world = players[0].getWorld();
         buildArena(x, y, z);
         teleportPlayers(world, x, y, z);
-        new BukkitRunnable() {
-            int timer = 4;
 
-            @Override
-            public void run() {
-                timer -= 1;
-                for (Player player : players) {
-                    player.sendTitle(timer == 0 ? ChatColor.GREEN + "Go!" : String.format((ChatColor.YELLOW + "%d"), timer), "", 0, 15, 5);
-                    player.playNote(player.getLocation(), Instrument.PLING, Note.sharp(timer == 0 ? 2 : 1, Note.Tone.F));
-                }
-                if (timer == 0) {
-                    gameStarted = true;
-                    cancel();
-                }
+        int[] timer = {4};
+
+        Bukkit.getScheduler().runTaskTimer(XyPVP.getInstance(), task -> {
+            timer[0] -= 1;
+            for (Player player : players) {
+                player.sendTitle(timer[0] == 0 ? ChatColor.GREEN + "Go!" : String.format((ChatColor.YELLOW + "%d"), timer[0]), "", 0, 15, 5);
+                player.playNote(player.getLocation(), Instrument.PLING, Note.sharp(timer[0] == 0 ? 2 : 1, Note.Tone.F));
             }
-        }.runTaskTimerAsynchronously(pl, 0, 20);
+            if (timer[0] == 0) {
+                gameStarted = true;
+                 task.cancel();
+            }
+
+        }, 0, 20);
+    }
+
+    public void unregisterEvents() {
+
+        PlayerDeathEvent.getHandlerList().unregister(this);
+        BlockPlaceEvent.getHandlerList().unregister(this);
+        BlockBreakEvent.getHandlerList().unregister(this);
+        EntityDamageEvent.getHandlerList().unregister(this);
+        PlayerMoveEvent.getHandlerList().unregister(this);
+        ProjectileHitEvent.getHandlerList().unregister(this);
+
     }
 
     public void teleportPlayers(World world, int x, int y, int z) {
@@ -93,15 +101,9 @@ public class Game implements Listener {
         loser.teleport(winner.getWorld().getSpawnLocation());
         clearArena();
 
-        plugin.queueHandler.games.removeIf(game -> game.equals(this));
-
-        PlayerDeathEvent.getHandlerList().unregister(this);
-        BlockPlaceEvent.getHandlerList().unregister(this);
-        BlockBreakEvent.getHandlerList().unregister(this);
-        EntityDamageEvent.getHandlerList().unregister(this);
-        PlayerMoveEvent.getHandlerList().unregister(this);
-        ProjectileHitEvent.getHandlerList().unregister(this);
+        XyPVP.getInstance().queueHandler.games.removeIf(game -> game.equals(this));
         trackedBlocks.clear();
+        unregisterEvents();
     }
 
     @EventHandler
@@ -126,7 +128,7 @@ public class Game implements Listener {
     }
 
     public boolean containsCurrentPlayers(UUID[] pUUIDs) {
-        for (Game game : plugin.queueHandler.games) {
+        for (Game game : XyPVP.getInstance().queueHandler.games) {
             if (Arrays.equals(game.playerUUIDs, pUUIDs)) {
                 return true;
             }

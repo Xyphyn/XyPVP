@@ -22,19 +22,11 @@ public class LobbyHandler implements Listener {
     public int[][][] lobbyCoords = {{{108, 124}, {121, 139}}};
     public ItemStack[] lobbyInv = new ItemStack[9];
     public boolean enabled = true;
-    public static XyPVP plugin;
 
-    public LobbyHandler(Plugin pl) {
-        plugin = (XyPVP) pl;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (enabled) {
-                    hotbarChecker();
-                    resetHealth();
-                };
-            }
-        }.runTaskTimer(pl, 0, 1);
+    public LobbyHandler() {
+        Bukkit.getScheduler().runTaskTimer(XyPVP.getInstance(), () -> {
+            if (enabled) { hotbarChecker(); resetHealth(); }
+        }, 0, 1);
 
         ItemStack gameMenu = new ItemStack(Material.NETHER_STAR);
         ItemMeta gameMenuMeta = gameMenu.getItemMeta();
@@ -44,7 +36,7 @@ public class LobbyHandler implements Listener {
 
         lobbyInv[0] = gameMenu;
 
-        Bukkit.getPluginManager().registerEvents(this, pl);
+        Bukkit.getPluginManager().registerEvents(this, XyPVP.getInstance());
     }
 
     @EventHandler
@@ -58,7 +50,7 @@ public class LobbyHandler implements Listener {
         int playerX = player.getLocation().getBlockX();
         int playerZ = player.getLocation().getBlockZ();
 
-        for (int[][] lobbyCoord : plugin.lobbyHandler.lobbyCoords)
+        for (int[][] lobbyCoord : XyPVP.getInstance().lobbyHandler.lobbyCoords)
             if (playerX >= lobbyCoord[0][0] && playerX <= lobbyCoord[0][1])
                 if (playerZ >= lobbyCoord[1][0] && playerZ <= lobbyCoord[1][1])
                     return true;

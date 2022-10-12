@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -20,8 +21,8 @@ import java.util.UUID;
 public class Sumo extends Game {
     public BoundingBox copyArea;
 
-    public Sumo(Player[] plyers, Plugin pl, UUID[] playerUUIDs) {
-        super(plyers, pl, playerUUIDs);
+    public Sumo(Player[] plyers, UUID[] playerUUIDs) {
+        super(plyers, playerUUIDs);
 
     }
     @Override
@@ -40,7 +41,8 @@ public class Sumo extends Game {
     @Override
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        if (Arrays.asList(playerUUIDs).contains(event.getEntity().getUniqueId()) && (!(event.getEntity().getLocation().getBlockY() < 0))) {
+        Entity e = event.getEntity();
+        if (Arrays.asList(playerUUIDs).contains(e.getUniqueId()) && (!(e.getLocation().getBlockY() < 0))) {
             event.setDamage(0);
         }
     }

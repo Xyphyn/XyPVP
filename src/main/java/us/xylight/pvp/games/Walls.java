@@ -10,10 +10,15 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
+import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.util.PlaceableBlock;
 
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 public class Walls extends Game {
@@ -35,8 +40,8 @@ public class Walls extends Game {
         }
     }
 
-    public Walls(Player[] plyers, Plugin pl, UUID[] playerUUIDs) {
-        super(plyers, pl, playerUUIDs);
+    public Walls(Player[] plyers, UUID[] playerUUIDs) {
+        super(plyers, playerUUIDs);
 
         World w = plyers[0].getWorld();
 
@@ -74,29 +79,20 @@ public class Walls extends Game {
             player.updateInventory();
         }
 
-        new BukkitRunnable() {
-            int timer = 30;
+        int[] timer = {30};
 
-            @Override
-            public void run() {
-                for (Player player : players) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(String.format((ChatColor.YELLOW + "You have %d seconds to build a fort!"), timer)));
-                }
-                timer -= 1;
-                if (timer == 0) {
-                    cancel();
-                }
+        BukkitScheduler scheduler = Bukkit.getScheduler();
+
+        scheduler.runTaskTimer(XyPVP.getInstance(), task -> {
+            Arrays.asList(players).forEach(p -> p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(String.format((ChatColor.YELLOW + "You have %d seconds to build a fort!"), timer[0]))));
+
+            timer[0] -= 1;
+            if (timer[0] == 0) {
+                task.cancel();
             }
-        }.runTaskTimer(pl, 0, 20);
+        }, 0, 20);
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                clearWalls(w);
-
-                started = true;
-            }
-        }.runTaskLater(pl, 600);
+        scheduler.runTaskLater(XyPVP.getInstance(), () -> { clearWalls(w); started = true; }, 20 * 30);
     }
 
     public void clearWalls(World w) {

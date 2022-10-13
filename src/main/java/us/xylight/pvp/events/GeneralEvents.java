@@ -38,6 +38,7 @@ public class GeneralEvents implements Listener {
         p.setRotation(180, 0);
 
         XyPVP.getInstance().rankHandler.loadRank(p);
+        event.setJoinMessage(event.getPlayer().getDisplayName() + ChatColor.GRAY + " joined.");
     }
 
     @EventHandler
@@ -85,6 +86,8 @@ public class GeneralEvents implements Listener {
                 return;
             }
         }
+
+        event.setQuitMessage(event.getPlayer().getDisplayName() + ChatColor.GRAY + " left.");
 
         XyPVP.getInstance().ffa.killMap.remove(event.getPlayer().getUniqueId());
         XyPVP.getInstance().ffa.players.remove(event.getPlayer());

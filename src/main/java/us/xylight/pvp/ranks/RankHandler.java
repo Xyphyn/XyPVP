@@ -2,15 +2,16 @@ package us.xylight.pvp.ranks;
 
 import org.bukkit.entity.Player;
 import us.xylight.pvp.XyPVP;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class RankHandler {
     Map<Player, Rank> ranks = new HashMap<>();
+    public void changeName(Player p, String nick) {
+    }
 
     public void setRank(Player player, Rank rank) {
-
+        changeName(player, rank.prefix + " " + rank.nameColor + player.getName());
 
         player.setDisplayName(rank.prefix + " " + rank.nameColor + player.getName());
         player.setPlayerListName(rank.prefix + " " + rank.nameColor + player.getName());
@@ -34,6 +35,7 @@ public class RankHandler {
         Object rankString = XyPVP.getInstance().config.getConfig().get(player.getUniqueId().toString());
         Rank rank = (rankString == null) ? Rank.NONE : stringToRank(rankString.toString());
         assert rank != null;
+
         player.setDisplayName(rank.prefix + " " + rank.nameColor + player.getName());
         player.setPlayerListName(rank.prefix + " " + rank.nameColor + player.getName());
         ranks.put(player, rank);

@@ -59,35 +59,30 @@ public class MenuHandler implements Listener {
                 new MenuItem(getItem(new ItemStack(Material.BARRIER), "&bNone", "&8&l• &8No ability"), "&bNone", 11,
                         event -> {
                         pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new None());
-                        event.getWhoClicked().sendMessage(ChatColor.GREEN + "Ability set to None");
                         ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                         openAbilitiesMenu((Player) event.getWhoClicked());
                      }),
                 new MenuItem(getItem(new ItemStack(Material.RABBIT_FOOT), "&bSpeed", "&b&l+ &r&bSpeed", "&c&l- &r&cNo leggings"), "&bSpeed", 12,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Speed());
-                            event.getWhoClicked().sendMessage(ChatColor.GREEN + "Ability set to Speed");
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                             openAbilitiesMenu((Player) event.getWhoClicked());
                         }),
                 new MenuItem(getItem(new ItemStack(Material.CHAINMAIL_CHESTPLATE), "&bTank", "&b&l+ &r&bProtection 3", "&c&l- &r&cSlowness"), "&bTank", 13,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Tank());
-                            event.getWhoClicked().sendMessage(ChatColor.GREEN + "Ability set to Tank");
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                             openAbilitiesMenu((Player) event.getWhoClicked());
                         }),
                 new MenuItem(getItem(new ItemStack(Material.REDSTONE), "&bFrenzy", "&b&l+ &r&bStrength", "&c&l- &r&cNo chestplate", "&c&l- &r&cChainmail Leggings"), "&bFrenzy", 14,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Frenzy());
-                            event.getWhoClicked().sendMessage(ChatColor.GREEN + "Ability set to Frenzy");
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                             openAbilitiesMenu((Player) event.getWhoClicked());
                         }),
                 new MenuItem(getItem(new ItemStack(Material.DIAMOND_BOOTS), "&bJump", "&b&l+ &r&bJump Boost 3", "&c&l- &r&cNo boots", "&c&l- &r&cWeakness"), "&bJump", 15,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Jump());
-                            event.getWhoClicked().sendMessage(ChatColor.GREEN + "Ability set to Jump");
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                             openAbilitiesMenu((Player) event.getWhoClicked());
                         }),

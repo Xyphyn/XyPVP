@@ -17,6 +17,7 @@ import us.xylight.pvp.commands.TestCommand;
 import us.xylight.pvp.commands.WorldProtectToggle;
 import us.xylight.pvp.events.GeneralEvents;
 import us.xylight.pvp.games.FFA;
+import us.xylight.pvp.games.Game;
 import us.xylight.pvp.handlers.*;
 import us.xylight.pvp.menus.MenuItem;
 import us.xylight.pvp.ranks.Rank;
@@ -54,6 +55,7 @@ public final class XyPVP extends JavaPlugin {
 
 //        }
         lobbyHandler = new LobbyHandler();
+
         getCommand("worldprotect").setExecutor(new WorldProtectToggle());
         getCommand("test").setExecutor(new TestCommand(this));
         getCommand("lobbyinvtoggle").setExecutor(new LobbyInvToggle(this));
@@ -67,10 +69,12 @@ public final class XyPVP extends JavaPlugin {
         scoreboardHandler.createMainScoreboard();
 
         Bukkit.getScheduler().runTaskTimer(this, task -> {
-            scoreboardHandler.setMainScoreboard(new String[]{String.format(ChatColor.translateAlternateColorCodes('&',  "&b&lPlayers&r: %d"), Bukkit.getServer().getOnlinePlayers().size())});
+            scoreboardHandler.setMainScoreboard(new String[]{String.format("   ▎" + ChatColor.LIGHT_PURPLE + "  Players" + ChatColor.WHITE + ": %d", Bukkit.getServer().getOnlinePlayers().size()) + "   "});
         }, 0, 20 * 2);
 
         Bukkit.getOnlinePlayers().forEach(rankHandler::loadRank);
+
+        Bukkit.getLogger().info("build system is working");
     }
 
     @Override

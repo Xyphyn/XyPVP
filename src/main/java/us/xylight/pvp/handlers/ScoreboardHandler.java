@@ -14,7 +14,7 @@ public class ScoreboardHandler {
         mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         Objective obj;
         if (mainScoreboard.getObjective("Scoreboard") == null) {
-            obj = mainScoreboard.registerNewObjective("Scoreboard", Criteria.DUMMY, ChatColor.translateAlternateColorCodes('&', "     &fXy&b&lPVP     "));
+            obj = mainScoreboard.registerNewObjective("Scoreboard", Criteria.DUMMY, ChatColor.translateAlternateColorCodes('&', "  ⥠  "));
         } else {
             obj = mainScoreboard.getObjective("Scoreboard");
         }

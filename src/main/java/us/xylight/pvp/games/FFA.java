@@ -224,6 +224,8 @@ public class FFA implements Listener {
                 abilities.get(p.getUniqueId()) != null ? ability.getClass().getSimpleName() : "None")
         ), BarColor.YELLOW, BarStyle.SOLID);
 
+        p.sendTitle("⇗", "", 5, 15, 5);
+
         bossBars.put(p.getUniqueId(), bar);
 
         bar.addPlayer(p);

@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class OP extends Game {
@@ -16,8 +17,8 @@ public class OP extends Game {
         return item;
     }
 
-    public OP(Player[] plyers, UUID[] playerUUIDs) {
-        super(plyers, playerUUIDs);
+    public OP(ArrayList<Player> plyers) {
+        super(plyers);
 
         this.gameInventory = new ItemStack[] {
                 enchant(new ItemStack(Material.DIAMOND_SWORD), Enchantment.DAMAGE_ALL, 2),

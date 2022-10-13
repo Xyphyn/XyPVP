@@ -23,34 +23,29 @@ import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.handlers.QueueHandler;
 import us.xylight.pvp.util.PlaceableBlock;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class Game implements Listener {
     Random rand = new Random();
     BoundingBox arenaArea;
     ItemStack[] gameInventory = new ItemStack[] {};
-    public Player[] players;
-    public UUID[] playerUUIDs;
+    public ArrayList<Player> players;
     public ArrayList<Block> trackedBlocks = new ArrayList<>();
     int x;
     int y;
     int z;
     boolean gameStarted;
 
-    public Game(Player[] plyers, UUID[] playerUUIDs) {
+    public Game(ArrayList<Player> plyers) {
         Bukkit.getPluginManager().registerEvents(this, XyPVP.getInstance());
-        this.playerUUIDs = playerUUIDs;
+        this.players = plyers;
 
         x = rand.nextInt(100000);
         y = 175;
         z = rand.nextInt(100000);
 
         arenaArea = new BoundingBox(x, y, z, x + 50, y + 10, z + 25);
-        this.players = plyers;
-        World world = players[0].getWorld();
+        World world = players.get(0).getWorld();
         buildArena(x, y, z);
         teleportPlayers(world, x, y, z);
 
@@ -101,20 +96,18 @@ public class Game implements Listener {
         loser.teleport(winner.getWorld().getSpawnLocation());
         clearArena();
 
-        XyPVP.getInstance().queueHandler.games.removeIf(game -> game.equals(this));
+        QueueHandler.removeGame(this);
         trackedBlocks.clear();
         unregisterEvents();
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (players.length <= 2) {
-            if (event.getEntity().equals(players[0]))
-                resetOnDeath(players[1], players[0]);
+        if (players.size() <= 2) {
+            if (event.getEntity().equals(players.get(0)))
+                resetOnDeath(players.get(1), players.get(0));
             else
-                resetOnDeath(players[0], players[1]);
-
-        } else {
+                resetOnDeath(players.get(0), players.get(1));
 
         }
     }
@@ -125,16 +118,6 @@ public class Game implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         event.setCancelled(!trackedBlocks.contains(event.getBlock()));
-    }
-
-    public boolean containsCurrentPlayers(UUID[] pUUIDs) {
-        for (Game game : XyPVP.getInstance().queueHandler.games) {
-            if (Arrays.equals(game.playerUUIDs, pUUIDs)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @EventHandler
@@ -149,7 +132,7 @@ public class Game implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (Arrays.asList(playerUUIDs).contains(event.getPlayer().getUniqueId()) && containsCurrentPlayers(playerUUIDs)) {
+        if (players.contains(event.getPlayer())) {
             trackedBlocks.add(event.getBlock());
         }
     }
@@ -157,7 +140,7 @@ public class Game implements Listener {
     public void clearArena() {
         Vector max = arenaArea.getMax();
         Vector min = arenaArea.getMin();
-        World world = players[0].getWorld();
+        World world = players.get(0).getWorld();
 
         // Ground
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
@@ -172,7 +155,7 @@ public class Game implements Listener {
     public void buildArena(int passedX, int passedY, int passedZ) {
         Vector max = arenaArea.getMax();
         Vector min = arenaArea.getMin();
-        World world = players[0].getWorld();
+        World world = players.get(0).getWorld();
 
         // Ground
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {

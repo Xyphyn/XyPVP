@@ -25,8 +25,8 @@ public class WorldProtect implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if (!enabled) return;
-        for (Game game : XyPVP.getInstance().queueHandler.games) {
-            if (Arrays.asList(game.players).contains(event.getPlayer())) {
+        for (Game game : QueueHandler.getGames()) {
+            if (game.players.contains(event.getPlayer())) {
                 event.setCancelled(false);
                 return;
             }

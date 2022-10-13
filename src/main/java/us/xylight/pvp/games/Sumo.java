@@ -15,14 +15,15 @@ import org.bukkit.util.Vector;
 import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.util.PlaceableBlock;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
 public class Sumo extends Game {
     public BoundingBox copyArea;
 
-    public Sumo(Player[] plyers, UUID[] playerUUIDs) {
-        super(plyers, playerUUIDs);
+    public Sumo(ArrayList<Player> plyers) {
+        super(plyers);
 
     }
     @Override
@@ -42,7 +43,7 @@ public class Sumo extends Game {
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         Entity e = event.getEntity();
-        if (Arrays.asList(playerUUIDs).contains(e.getUniqueId()) && (!(e.getLocation().getBlockY() < 0))) {
+        if (players.contains(e) && (!(e.getLocation().getBlockY() < 0))) {
             event.setDamage(0);
         }
     }
@@ -50,10 +51,10 @@ public class Sumo extends Game {
     @Override
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (Arrays.asList(playerUUIDs).contains(event.getPlayer().getUniqueId()) && !gameStarted) {
+        if (players.contains(event.getPlayer()) && !gameStarted) {
             event.setCancelled(true);
         }
-        if (Arrays.asList(playerUUIDs).contains(event.getPlayer().getUniqueId()) && (event.getPlayer().getLocation().getBlockY() < -5)) {
+        if (players.contains(event.getPlayer()) && (event.getPlayer().getLocation().getBlockY() < -5)) {
             event.getPlayer().setHealth(0);
         }
     }
@@ -69,7 +70,7 @@ public class Sumo extends Game {
         Vector min1 = arenaArea.getMin();
         Vector max2 = copyArea.getMax();
         Vector min2 = copyArea.getMin();
-        World world = players[0].getWorld();
+        World world = players.get(0).getWorld();
 
         for (int x2 = min2.getBlockX(); x2 <= max2.getBlockX(); x2++) {
             for (int y2 = min2.getBlockY(); y2 <= max2.getBlockY(); y2++) {

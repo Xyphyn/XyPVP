@@ -16,10 +16,7 @@ import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.util.PlaceableBlock;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 public class Walls extends Game {
     ItemStack enchant(ItemStack item, Enchantment enchantment, int level) {
@@ -40,10 +37,10 @@ public class Walls extends Game {
         }
     }
 
-    public Walls(Player[] plyers, UUID[] playerUUIDs) {
-        super(plyers, playerUUIDs);
+    public Walls(ArrayList<Player> plyers) {
+        super(plyers);
 
-        World w = plyers[0].getWorld();
+        World w = plyers.get(0).getWorld();
 
         Vector min = arenaArea.getMin();
         Vector max = arenaArea.getMax();
@@ -51,7 +48,7 @@ public class Walls extends Game {
         for (int x2 = (int) Math.floor(min.getBlockX() + ((max.getBlockX() - min.getBlockX()) / 2f)); x2 <= (int) Math.floor(min.getBlockX() + ((max.getBlockX() - min.getBlockX()) / 2f)); x2++) {
             for (int y2 = min.getBlockY() + 1; y2 < max.getBlockY(); y2++) {
                 for (int z2 = min.getBlockZ() + 1; z2 < max.getBlockZ(); z2++) {
-                    plyers[0].getWorld().getBlockAt(x2, y2, z2).setType(Material.BEDROCK);
+                    plyers.get(0).getWorld().getBlockAt(x2, y2, z2).setType(Material.BEDROCK);
                 }
             }
         }
@@ -84,7 +81,7 @@ public class Walls extends Game {
         BukkitScheduler scheduler = Bukkit.getScheduler();
 
         scheduler.runTaskTimer(XyPVP.getInstance(), task -> {
-            Arrays.asList(players).forEach(p -> p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(String.format((ChatColor.YELLOW + "You have %d seconds to build a fort!"), timer[0]))));
+            players.forEach(p -> p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(String.format((ChatColor.YELLOW + "You have %d seconds to build a fort!"), timer[0]))));
 
             timer[0] -= 1;
             if (timer[0] == 0) {

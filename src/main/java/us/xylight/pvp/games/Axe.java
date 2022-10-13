@@ -5,11 +5,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Axe extends Game {
-    public Axe(Player[] plyers, UUID[] playerUUIDs) {
-        super(plyers, playerUUIDs);
+    public Axe(ArrayList<Player> plyers) {
+        super(plyers);
 
         this.gameInventory = new ItemStack[] {
                 new ItemStack(Material.IRON_AXE),

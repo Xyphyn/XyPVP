@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.Plugin;
 import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.games.Game;
+import us.xylight.pvp.handlers.QueueHandler;
 import us.xylight.pvp.ranks.Rank;
 import us.xylight.pvp.ranks.RankHandler;
 
@@ -69,23 +70,18 @@ public class GeneralEvents implements Listener {
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
-        for (Game game : XyPVP.getInstance().queueHandler.games) {
-            if (Arrays.asList(game.playerUUIDs).contains(event.getPlayer().getUniqueId())) {
-                if (game.players[0].equals(event.getPlayer())) {
-                    game.resetOnDeath(game.players[1], game.players[0]);
+        for (Game game : QueueHandler.getGames()) {
+            if (game.players.contains(event.getPlayer())) {
+                if (game.players.get(0).equals(event.getPlayer())) {
+                    game.resetOnDeath(game.players.get(1), game.players.get(0));
                 } else {
-                    game.resetOnDeath(game.players[0], game.players[1]);
+                    game.resetOnDeath(game.players.get(0), game.players.get(0));
                 }
                 return;
             }
         }
 
-        for (UUID pUUID : XyPVP.getInstance().queueHandler.queue.keySet()) {
-            if (pUUID.equals(event.getPlayer().getUniqueId())) {
-                XyPVP.getInstance().queueHandler.queue.remove(pUUID);
-                return;
-            }
-        }
+        QueueHandler.removeFromQueue(event.getPlayer());
 
         event.setQuitMessage(event.getPlayer().getDisplayName() + ChatColor.GRAY + " left.");
 

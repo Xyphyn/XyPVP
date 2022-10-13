@@ -6,12 +6,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Survival extends Game {
 
-    public Survival(Player[] plyers, UUID[] playerUUIDs) {
-        super(plyers, playerUUIDs);
+    public Survival(ArrayList<Player> plyers) {
+        super(plyers);
 
         this.gameInventory = new ItemStack[] {
                 new ItemStack(Material.IRON_SWORD),

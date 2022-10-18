@@ -24,18 +24,25 @@ public class ScoreboardHandler {
     }
 
     public void setMainScoreboard(String[] lines) {
-        for (String entry : mainScoreboard.getEntries()) {
-            mainScoreboard.resetScores(entry);
-        }
-
-        for (String line : lines) {
-            mainScoreboard.getScores(line).forEach((Score score) -> {
-                score.setScore(0);
-            });
-        }
     }
 
     public void setPlayerScoreboard(Player p, String title, String[] lines) {
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        Objective obj = scoreboard.registerNewObjective("Scoreboard", Criteria.DUMMY, "  ⥠  ");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
+
+        for (String entry : scoreboard.getEntries()) {
+            scoreboard.resetScores(entry);
+        }
+
+        int[] index = {lines.length - 1};
+        for (String line : lines) {
+            scoreboard.getScores(line).forEach((Score score) -> {
+                score.setScore(index[0]);
+                index[0]--;
+            });
+        }
+        p.setScoreboard(scoreboard);
     }
 }

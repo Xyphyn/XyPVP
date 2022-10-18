@@ -42,6 +42,8 @@ public class Sumo extends Game {
     @Override
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
+        if (finished) event.setCancelled(true);
+
         Entity e = event.getEntity();
         if (players.contains(e) && (!(e.getLocation().getBlockY() < 0))) {
             event.setDamage(0);

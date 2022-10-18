@@ -2,6 +2,7 @@ package us.xylight.pvp.ranks;
 
 public enum RankPermission {
     DEFAULT(0),
+    VIP(1),
     MODERATOR(2),
     ADMIN(3),
     OWNER(4);

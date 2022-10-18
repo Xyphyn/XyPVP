@@ -195,6 +195,7 @@ public class FFA implements Listener {
     }
 
     public void joinFFA(Player p, FFAKit kit) {
+
         if (players.contains(p)) {
             resetOnDeath(p);
         }
@@ -223,8 +224,6 @@ public class FFA implements Listener {
                 kit.name,
                 abilities.get(p.getUniqueId()) != null ? ability.getClass().getSimpleName() : "None")
         ), BarColor.YELLOW, BarStyle.SOLID);
-
-        p.sendTitle("⇗", "", 5, 15, 5);
 
         bossBars.put(p.getUniqueId(), bar);
 

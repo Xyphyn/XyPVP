@@ -13,8 +13,13 @@ public class WorkloadRunnable implements Runnable {
         this.workloadDeque.add(workload);
     }
 
+    public boolean isIdle() {
+        return this.workloadDeque.isEmpty();
+    }
+
     @Override
     public void run() {
+
         long stopTime = System.nanoTime() + MAX_NANOS_PER_TICK;
 
         Workload nextLoad;

@@ -37,56 +37,67 @@ public class MenuHandler implements Listener {
     public XyPVP pl;
 
     public HashMap<String, Menu> associations;
+    public static HashMap<MenuItem, ItemStack> itemAssociations = new HashMap<>();
     MenuItem[] ffaMenuItems;
 
     ItemStack arenaItem = getItem(new ItemStack(Material.DIAMOND_SWORD), "&bFFA", "&8Fight in the colosseum!");
     ItemStack multiplayerItem = getItem(new ItemStack(Material.GOLDEN_SWORD), "&bMultiplayer", "&8Duels, minigames, and more");
+    ItemStack invisibleExit = getItem(new ItemStack(Material.PAPER), "&cExit");
+    ItemStack invisAbility = getItem(new ItemStack(Material.PAPER), "&bAbilities");
     MenuItem[] gameMenuItems;
     MenuItem[] multiplayerMenuItems;
     MenuItem[] abilityMenuItems;
     public MenuHandler() {
         this.pl = XyPVP.getInstance();
         Bukkit.getPluginManager().registerEvents(this, this.pl);
+        ItemMeta meta = invisibleExit.getItemMeta();
+        meta.setCustomModelData(1);
+        invisibleExit.setItemMeta(meta);
+        ItemMeta meta2 = invisAbility.getItemMeta();
+        meta2.setCustomModelData(2);
+        invisAbility.setItemMeta(meta2);
 
         gameMenuItems = new MenuItem[]{
-                new MenuItem(arenaItem, "&bFFA", 11,
+                new MenuItem(arenaItem, 1,
                         event -> openFFAMenu((Player) event.getWhoClicked()) ),
-                new MenuItem(multiplayerItem, "&9Multiplayer", 13,
-                        event -> openMultiplayerMenu((Player) event.getWhoClicked()))
+                new MenuItem(multiplayerItem, 4,
+                        event -> openMultiplayerMenu((Player) event.getWhoClicked())),
+                new MenuItem(getItem(invisibleExit, "&cExit"),  22,
+                        event -> event.getWhoClicked().closeInventory())
         };
 
         abilityMenuItems = new MenuItem[] {
-                new MenuItem(getItem(new ItemStack(Material.BARRIER), "&bNone", "&8&l• &8No ability"), "&bNone", 11,
+                new MenuItem(getItem(new ItemStack(Material.BARRIER), "&bNone", "&8&l• &8No ability"),  0,
                         event -> {
-                        pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new None());
+                        pl.ffa.abilities.put((event.getWhoClicked()).getUniqueId(), new None());
                         ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                         openAbilitiesMenu((Player) event.getWhoClicked());
                      }),
-                new MenuItem(getItem(new ItemStack(Material.RABBIT_FOOT), "&bSpeed", "&b&l+ &r&bSpeed", "&c&l- &r&cNo leggings"), "&bSpeed", 12,
+                new MenuItem(getItem(new ItemStack(Material.RABBIT_FOOT), "&bSpeed", "&b+ &r&bSpeed", "&c&l- &r&cNo leggings"), 2,
                         event -> {
-                            pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Speed());
+                            pl.ffa.abilities.put((event.getWhoClicked()).getUniqueId(), new Speed());
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                             openAbilitiesMenu((Player) event.getWhoClicked());
                         }),
-                new MenuItem(getItem(new ItemStack(Material.CHAINMAIL_CHESTPLATE), "&bTank", "&b&l+ &r&bProtection 3", "&c&l- &r&cSlowness"), "&bTank", 13,
+                new MenuItem(getItem(new ItemStack(Material.CHAINMAIL_CHESTPLATE), "&bTank", "&b+ &r&bProtection 3", "&c&l- &r&cSlowness"),  4,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Tank());
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                             openAbilitiesMenu((Player) event.getWhoClicked());
                         }),
-                new MenuItem(getItem(new ItemStack(Material.REDSTONE), "&bFrenzy", "&b&l+ &r&bStrength", "&c&l- &r&cNo chestplate", "&c&l- &r&cChainmail Leggings"), "&bFrenzy", 14,
+                new MenuItem(getItem(new ItemStack(Material.REDSTONE), "&bFrenzy", "&b+ &r&bStrength", "&c&l- &r&cNo chestplate", "&c&l- &r&cChainmail Leggings"),  6,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Frenzy());
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                             openAbilitiesMenu((Player) event.getWhoClicked());
                         }),
-                new MenuItem(getItem(new ItemStack(Material.DIAMOND_BOOTS), "&bJump", "&b&l+ &r&bJump Boost 3", "&c&l- &r&cNo boots", "&c&l- &r&cWeakness"), "&bJump", 15,
+                new MenuItem(getItem(new ItemStack(Material.DIAMOND_BOOTS), "&bJump", "&b+ &r&bJump Boost 3", "&c&l- &r&cNo boots", "&c&l- &r&cWeakness"),  8,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Jump());
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                             openAbilitiesMenu((Player) event.getWhoClicked());
                         }),
-                new MenuItem(getItem(new ItemStack(Material.DARK_OAK_DOOR), "&cBack", "Return to the FFA menu."), "&cBack", 26,
+                new MenuItem(getItem(invisibleExit, "&cBack"),  22,
                         event -> {
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                             openFFAMenu((Player) event.getWhoClicked());
@@ -95,30 +106,30 @@ public class MenuHandler implements Listener {
 
         multiplayerMenuItems = new MenuItem[] {
             new MenuItem(getItem(new ItemStack(Material.IRON_CHESTPLATE), "&bSurvival", "&8Iron armor, iron weapons"),
-                    "&bSurvival", 11,
+                     0,
                     event -> pl.queueHandler.queue((Player) event.getWhoClicked(), QueueTypes.SURVIVAL)),
-            new MenuItem(getItem(new ItemStack(Material.ENCHANTED_GOLDEN_APPLE), "&bOP", "&8Enchanted diamond armor and weapons"), "&bOP", 12,
+            new MenuItem(getItem(new ItemStack(Material.ENCHANTED_GOLDEN_APPLE), "&bOP", "&8Enchanted diamond armor and weapons"), 2,
                     event -> pl.queueHandler.queue((Player) event.getWhoClicked(), QueueTypes.OP)),
-            new MenuItem(getItem(new ItemStack(Material.LEAD), "&bSumo", "&8Knock the other player off the map!"), "&bSumo", 13,
+            new MenuItem(getItem(new ItemStack(Material.LEAD), "&bSumo", "&8Knock the other player off the map!"), 4,
                     event -> pl.queueHandler.queue((Player) event.getWhoClicked(), QueueTypes.SUMO)),
-            new MenuItem(getItem(new ItemStack(Material.COBBLESTONE_WALL), "&bWalls", "&8Build a fort and bow your opponent!"), "&bWalls", 14,
+            new MenuItem(getItem(new ItemStack(Material.COBBLESTONE_WALL), "&bWalls", "&8Build a fort and bow your opponent!"), 6,
                     event -> pl.queueHandler.queue((Player) event.getWhoClicked(), QueueTypes.WALLS)),
-                new MenuItem(getItem(new ItemStack(Material.IRON_AXE), "&bAxe", "&8Traditional axe PvP."), "&bAxe", 15,
+                new MenuItem(getItem(new ItemStack(Material.IRON_AXE), "&bAxe", "&8Traditional axe PvP."), 8,
                         event -> pl.queueHandler.queue((Player) event.getWhoClicked(), QueueTypes.AXE))
         };
 
         ffaMenuItems = new MenuItem[] {
-                new MenuItem(getItem(new ItemStack(Material.DIAMOND_AXE), "&bAxe", "&8Melee    | &6★★★★★", "&8Defense | &6★★★☆☆"), "&bAxe", 10,
+                new MenuItem(getItem(new ItemStack(Material.DIAMOND_AXE), "&bAxe", "&8Melee    | &6★★★★★", "&8Defense | &6★★★☆☆"), 1,
                         event -> pl.ffa.joinFFA((Player) event.getWhoClicked(), new AxeKit((Player) event.getWhoClicked()))),
-                new MenuItem(getItem(new ItemStack(Material.DIAMOND_SWORD), "&bKnight", "&8Melee    | &6★★★★☆", "&8Defense | &6★★★★☆"), "&bSword", 12,
+                new MenuItem(getItem(new ItemStack(Material.DIAMOND_SWORD), "&bKnight", "&8Melee    | &6★★★★☆", "&8Defense | &6★★★★☆"), 3,
                         event -> pl.ffa.joinFFA((Player) event.getWhoClicked(), new SwordKit((Player) event.getWhoClicked()))),
-                new MenuItem(getItem(new ItemStack(Material.BOW), "&bArcher", "&8Ranged  | &6★★★★★", "&8Melee    | &6★★☆☆☆", "&8Defense | &6★★★☆☆"), "&bBow", 14,
+                new MenuItem(getItem(new ItemStack(Material.BOW), "&bArcher", "&8Ranged  | &6★★★★★", "&8Melee    | &6★★☆☆☆", "&8Defense | &6★★★☆☆"), 5,
                         event -> pl.ffa.joinFFA((Player) event.getWhoClicked(), new BowKit((Player) event.getWhoClicked()))),
-                new MenuItem(getItem(new ItemStack(Material.TRIDENT), "&bTrident", "&8Ranged  | &6★★★☆☆", "&8Melee    | &6★★★★☆", "&8Defense | &6★★★☆☆"), "&bTrident", 16,
+                new MenuItem(getItem(new ItemStack(Material.TRIDENT), "&bTrident", "&8Ranged  | &6★★★☆☆", "&8Melee    | &6★★★★☆", "&8Defense | &6★★★☆☆"), 7,
                 event -> pl.ffa.joinFFA((Player) event.getWhoClicked(), new TridentKit((Player) event.getWhoClicked()))),
-                new MenuItem(getItem(new ItemStack(Material.BEACON), "&bAbilities", "&8Abilities can power you up- at a cost!"), "&bAbilities", 26, event -> openAbilitiesMenu((Player) event.getWhoClicked()))
+                new MenuItem(getItem(invisAbility, "&bAbilities", "&8Abilities can power you up- at a cost!"),  26, event -> openAbilitiesMenu((Player) event.getWhoClicked())),
+                new MenuItem(getItem(invisibleExit, "&cExit" ), 22, event -> event.getWhoClicked().closeInventory())
         };
-
     }
 
     @EventHandler
@@ -135,18 +146,18 @@ public class MenuHandler implements Listener {
     }
 
     public void openGameMenu(Player p) {
-        Menu gameMenu = new Menu(gameMenuItems, 3, p, "Game Menu");
+        Menu gameMenu = new Menu(gameMenuItems, 3, p, ChatColor.WHITE + "\uF808⫝̸");
         p.openInventory(gameMenu.inventory);
     }
 
     public void openMultiplayerMenu(Player p) {
-        Menu multiplayerMenu = new Menu(multiplayerMenuItems, 3, p, "Multiplayer");
+        Menu multiplayerMenu = new Menu(multiplayerMenuItems, 3, p, ChatColor.WHITE + "\uF808₄");
         p.openInventory(multiplayerMenu.inventory);
     }
 
     public void openFFAMenu(Player p) {
 
-        Menu ffaMenu = new Menu(ffaMenuItems, 3, p, "FFA");
+        Menu ffaMenu = new Menu(ffaMenuItems, 3, p, ChatColor.WHITE + "\uF808₃");
         p.openInventory(ffaMenu.inventory);
     }
 
@@ -172,7 +183,7 @@ public class MenuHandler implements Listener {
             }
         }
 
-        Menu abilityMenu = new Menu(abilityMenuItems, 3, p, "Abilities");
+        Menu abilityMenu = new Menu(abilityMenuItems, 3, p, ChatColor.WHITE + "\uF808₂");
         p.openInventory(abilityMenu.inventory);
     }
 

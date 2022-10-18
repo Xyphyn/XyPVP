@@ -12,7 +12,7 @@ import java.util.Objects;
 public enum Rank {
     // de2e39
     NONE("⮭", ChatColor.of("#AAAAAA"), ChatColor.of("#AAAAAA"), RankPermission.DEFAULT),
-    BETA("∈", ChatColor.of("#44cc4d"), ChatColor.WHITE, RankPermission.DEFAULT),
+    BETA("∈", ChatColor.of("#44cc4d"), ChatColor.WHITE, RankPermission.VIP),
     MODERATOR("➻", ChatColor.of("#4974eb"), ChatColor.WHITE, RankPermission.MODERATOR),
     SPOOKY("♜", ChatColor.of("#db5c2d"), ChatColor.of("#db5c2d"), RankPermission.MODERATOR),
     ADMIN("⬬", ChatColor.of("#de2e39"), ChatColor.WHITE, RankPermission.ADMIN),

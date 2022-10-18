@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +23,7 @@ import org.bukkit.util.Vector;
 import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.handlers.QueueHandler;
 import us.xylight.pvp.util.PlaceableBlock;
+import us.xylight.pvp.util.WorkloadRunnable;
 
 import java.util.*;
 
@@ -31,10 +33,10 @@ public class Game implements Listener {
     ItemStack[] gameInventory = new ItemStack[] {};
     public ArrayList<Player> players;
     public ArrayList<Block> trackedBlocks = new ArrayList<>();
-    int x;
-    int y;
-    int z;
+    int x, y, z;
     boolean gameStarted;
+    boolean finished;
+    public Map<Integer, ArrayList<Player>> teams = new HashMap<>();
 
     public Game(ArrayList<Player> plyers) {
         Bukkit.getPluginManager().registerEvents(this, XyPVP.getInstance());
@@ -48,6 +50,15 @@ public class Game implements Listener {
         World world = players.get(0).getWorld();
         buildArena(x, y, z);
         teleportPlayers(world, x, y, z);
+
+        teams.put(0, new ArrayList<>());
+        teams.put(1, new ArrayList<>());
+
+        final int[] index = {0};
+        plyers.forEach(p -> {
+            teams.get(index[0] % 2).add(p);
+            index[0]++;
+        });
 
         int[] timer = {4};
 
@@ -89,11 +100,13 @@ public class Game implements Listener {
 
     }
 
-    public void resetOnDeath(Player winner, Player loser) {
-        winner.sendMessage("You won!");
-        loser.sendMessage("You lost!");
-        winner.teleport(winner.getWorld().getSpawnLocation());
-        loser.teleport(winner.getWorld().getSpawnLocation());
+    public void resetOnDeath(ArrayList<Player> winners, ArrayList<Player> losers) {
+        winners.forEach(winner -> {
+            winner.teleport(winner.getWorld().getSpawnLocation());
+        });
+        losers.forEach(loser -> {
+            loser.teleport(loser.getWorld().getSpawnLocation());
+        });
         clearArena();
 
         QueueHandler.removeGame(this);
@@ -101,15 +114,65 @@ public class Game implements Listener {
         unregisterEvents();
     }
 
+    public void showVictory(Player p) {
+        p.sendTitle(String.format("⟿ %sVictory!", ChatColor.GOLD), "", 3, 35, 5);
+        p.sendMessage(ChatColor.GREEN + "You won!");
+        p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+
+        Bukkit.getScheduler().runTaskLater(XyPVP.getInstance(), () -> {
+            p.sendTitle("⇗", "", 20, 0, 15);
+        }, 43);
+    }
+
+    public void checkPlayerDeath() {
+        if (finished) return;
+        ArrayList<Player> team1 = teams.get(0);
+        ArrayList<Player> team2 = teams.get(1);
+
+        if (team1.stream().allMatch(Entity::isDead)) {
+            team2.forEach(this::showVictory);
+            finished = true;
+
+            Bukkit.getScheduler().runTaskLater(XyPVP.getInstance(), () -> {
+                resetOnDeath(team2, team1);
+            }, 20 * 3);
+
+
+        } else if (team2.stream().allMatch(Entity::isDead)) {
+            team1.forEach(this::showVictory);
+            finished = true;
+
+            Bukkit.getScheduler().runTaskLater(XyPVP.getInstance(), () -> {
+                resetOnDeath(team1, team2);
+            }, 20 * 3);
+        }
+    }
+
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (players.size() <= 2) {
-            if (event.getEntity().equals(players.get(0)))
-                resetOnDeath(players.get(1), players.get(0));
-            else
-                resetOnDeath(players.get(0), players.get(1));
+        checkPlayerDeath();
 
-        }
+
+
+        //        if (!died) died = true;
+//        else return;
+
+//        if (players.size() <= 2) {
+//            Player winner;
+//            Player loser;
+//            if (event.getEntity().equals(players.get(0))) {
+//                winner = players.get(1);
+//                loser = players.get(0);
+//            } else {
+//                winner = players.get(0);
+//                loser = players.get(1);
+//            }
+//            showVictory(winner);
+//
+//            Bukkit.getScheduler().runTaskLater(XyPVP.getInstance(), () -> {
+//                resetOnDeath(winner, loser);
+//            }, 20 * 3);
+//        }
     }
 
     @EventHandler
@@ -123,6 +186,7 @@ public class Game implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         if (!gameStarted) event.setCancelled(true);
+        if (finished) event.setCancelled(true);
     }
 
     @EventHandler
@@ -156,7 +220,6 @@ public class Game implements Listener {
         Vector max = arenaArea.getMax();
         Vector min = arenaArea.getMin();
         World world = players.get(0).getWorld();
-
         // Ground
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= min.getBlockY(); y++) {

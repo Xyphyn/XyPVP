@@ -39,6 +39,9 @@ public class QueueHandler {
         games.remove(game);
     }
 
+    public static Map<QueueTypes, Deque<Player>> getQueue() {
+        return queue;
+    }
     public boolean inQueue(Player p) {
         for (Deque<Player> deque : queue.values()) {
             if (deque.contains(p)) return true;

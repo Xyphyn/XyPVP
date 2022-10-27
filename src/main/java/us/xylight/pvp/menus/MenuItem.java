@@ -1,17 +1,9 @@
 package us.xylight.pvp.menus;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import us.xylight.pvp.XyPVP;
-import us.xylight.pvp.handlers.MenuHandler;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class MenuItem implements Listener {

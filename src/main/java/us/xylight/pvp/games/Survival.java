@@ -1,13 +1,10 @@
 package us.xylight.pvp.games;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class Survival extends Game {
 

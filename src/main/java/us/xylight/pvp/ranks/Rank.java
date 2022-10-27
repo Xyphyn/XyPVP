@@ -1,13 +1,6 @@
 package us.xylight.pvp.ranks;
 
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import us.xylight.pvp.XyPVP;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 public enum Rank {
     // de2e39

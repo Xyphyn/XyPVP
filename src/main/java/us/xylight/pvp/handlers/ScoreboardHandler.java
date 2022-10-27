@@ -5,12 +5,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
-import java.util.Map;
-
 public class ScoreboardHandler {
     public Scoreboard mainScoreboard;
 
-    public Scoreboard createMainScoreboard() {
+    public void createMainScoreboard() {
         mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         Objective obj;
         if (mainScoreboard.getObjective("Scoreboard") == null) {
@@ -20,10 +18,6 @@ public class ScoreboardHandler {
         }
         assert obj != null;
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-        return mainScoreboard;
-    }
-
-    public void setMainScoreboard(String[] lines) {
     }
 
     public void setPlayerScoreboard(Player p, String title, String[] lines) {

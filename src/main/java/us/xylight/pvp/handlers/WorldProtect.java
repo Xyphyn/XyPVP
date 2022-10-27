@@ -1,16 +1,11 @@
 package us.xylight.pvp.handlers;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.games.Game;
-
-import java.util.Arrays;
-import java.util.UUID;
 
 public class WorldProtect implements Listener {
     public WorldProtect(XyPVP plugin) {

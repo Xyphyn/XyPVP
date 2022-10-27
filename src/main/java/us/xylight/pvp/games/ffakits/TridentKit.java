@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import us.xylight.pvp.games.ffakits.abilities.Ability;
 import us.xylight.pvp.util.Enchant;
 
 public class TridentKit extends FFAKit {

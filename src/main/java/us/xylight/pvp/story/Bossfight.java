@@ -1,6 +1,9 @@
 package us.xylight.pvp.story;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -10,19 +13,15 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import us.xylight.pvp.XyPVP;
-import us.xylight.pvp.handlers.QueueHandler;
 import us.xylight.pvp.util.PlaceableBlock;
 import us.xylight.pvp.util.PlayerUtils;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import static us.xylight.pvp.util.Colorizer.colorize;

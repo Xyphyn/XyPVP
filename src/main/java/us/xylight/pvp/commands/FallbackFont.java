@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class FallbackFont implements CommandExecutor {
     public static HashMap<Player, Boolean> enabled = new HashMap<>();

@@ -15,16 +15,13 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.xylight.pvp.XyPVP;
-import us.xylight.pvp.games.ffakits.AxeKit;
-import us.xylight.pvp.games.ffakits.BowKit;
-import us.xylight.pvp.games.ffakits.SwordKit;
-import us.xylight.pvp.games.ffakits.TridentKit;
 import us.xylight.pvp.games.ffakits.abilities.*;
 import us.xylight.pvp.listeners.MenuListener;
 import us.xylight.pvp.menus.Menu;
 import us.xylight.pvp.menus.MenuItem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MenuHandler implements Listener {
     public XyPVP pl;

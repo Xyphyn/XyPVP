@@ -1,6 +1,5 @@
 package us.xylight.pvp.util;
 
-import net.minecraft.network.protocol.game.ClientboundInitializeBorderPacket;
 import net.minecraft.network.protocol.game.ClientboundSetBorderSizePacket;
 import net.minecraft.world.level.border.WorldBorder;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;

@@ -1,7 +1,10 @@
 package us.xylight.pvp.handlers;
 
 import org.bukkit.entity.Player;
-import us.xylight.pvp.games.*;
+import us.xylight.pvp.games.Axe;
+import us.xylight.pvp.games.Sumo;
+import us.xylight.pvp.games.Survival;
+import us.xylight.pvp.games.Walls;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;

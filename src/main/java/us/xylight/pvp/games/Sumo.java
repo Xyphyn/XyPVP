@@ -1,23 +1,17 @@
 package us.xylight.pvp.games;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
-import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.util.PlaceableBlock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
 
 public class Sumo extends Game {
     public BoundingBox copyArea;

@@ -2,6 +2,7 @@ package us.xylight.pvp.handlers;
 
 import org.bukkit.entity.Player;
 import us.xylight.pvp.games.ffakits.*;
+
 import java.util.function.Function;
 
 public enum KitType {

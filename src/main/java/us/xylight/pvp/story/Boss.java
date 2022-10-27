@@ -1,7 +1,6 @@
 package us.xylight.pvp.story;
 
 import org.bukkit.Location;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;

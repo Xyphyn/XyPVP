@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import us.xylight.pvp.games.Axe;
 
 public class AxeKit extends FFAKit {
     public AxeKit(Player player) {

@@ -2,21 +2,20 @@ package us.xylight.pvp.games;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
 import us.xylight.pvp.XyPVP;
-import us.xylight.pvp.util.PlaceableBlock;
 
-import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 
 public class Walls extends Game {
     ItemStack enchant(ItemStack item, Enchantment enchantment, int level) {

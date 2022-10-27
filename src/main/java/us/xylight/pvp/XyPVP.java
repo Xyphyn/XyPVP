@@ -1,11 +1,17 @@
 package us.xylight.pvp;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,37 +21,41 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.NameTagVisibility;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import us.xylight.pvp.commands.*;
 import us.xylight.pvp.events.GeneralEvents;
 import us.xylight.pvp.games.FFA;
 import us.xylight.pvp.games.Game;
 import us.xylight.pvp.handlers.*;
+import us.xylight.pvp.listeners.MenuListener;
 import us.xylight.pvp.menus.MenuItem;
 import us.xylight.pvp.npc.ClickableNPC;
 import us.xylight.pvp.npc.NPCSkin;
 import us.xylight.pvp.ranks.Rank;
 import us.xylight.pvp.ranks.RankHandler;
+import us.xylight.pvp.ranks.RankPermission;
+import us.xylight.pvp.story.Bossfight;
 import us.xylight.pvp.util.ConfigUtil;
 import us.xylight.pvp.util.WorkloadRunnable;
 import static us.xylight.pvp.util.Colorizer.colorize;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public final class XyPVP extends JavaPlugin {
-//    CommandExecutor[] commands = { new WorldProtectToggle() };
     public QueueHandler queueHandler;
     public LobbyHandler lobbyHandler;
     public MenuHandler menuHandler;
     public FFA ffa;
     public ScoreboardHandler scoreboardHandler;
-
     private static XyPVP instance;
     public Rank rank = Rank.NONE;
     public RankHandler rankHandler = new RankHandler();
-
     public ConfigUtil config;
     public WorkloadRunnable workloadRunnable;
     public ArrayList<ClickableNPC> npcs = new ArrayList<>();
+    public ArrayList<Bossfight> fights = new ArrayList<>();
     private static ProtocolManager protocolManager;
 
     public static XyPVP getInstance() {
@@ -75,6 +85,7 @@ public final class XyPVP extends JavaPlugin {
         getCommand("lobbyinvtoggle").setExecutor(new LobbyInvToggle(this));
         getCommand("setrank").setExecutor(new SetRank());
         getCommand("crash").setExecutor(new Crash());
+        getCommand("fallbackfont").setExecutor(new FallbackFont());
 
         menuHandler = new MenuHandler();
         queueHandler = new QueueHandler();
@@ -86,16 +97,18 @@ public final class XyPVP extends JavaPlugin {
         Bukkit.getScheduler().runTaskTimer(this, task -> {
             int players = Bukkit.getServer().getOnlinePlayers().size();
             Bukkit.getServer().getOnlinePlayers().forEach(p -> {
-                scoreboardHandler.setPlayerScoreboard(p, "", new String[]{
-                    "  ",
-                    String.format(" %s%sProfile ", ChatColor.LIGHT_PURPLE, ChatColor.BOLD),
-                    String.format("   |%s   Name:%s %s ", ChatColor.LIGHT_PURPLE, ChatColor.WHITE, p.getName()),
-                    " ",
-                    String.format(" %s%sStats ", ChatColor.LIGHT_PURPLE, ChatColor.BOLD),
-                    String.format("   |%s   Players%s: %d ", ChatColor.LIGHT_PURPLE, ChatColor.WHITE, players),
-                    String.format("   |%s   Ping%s: %d ", ChatColor.LIGHT_PURPLE, ChatColor.WHITE, p.getPing()),
-                    "    ",
-                    "     "});
+                    scoreboardHandler.setPlayerScoreboard(p, "", new String[]{
+                            "  ",
+                            String.format(" %s%sProfile ", ChatColor.LIGHT_PURPLE, ChatColor.BOLD),
+                            String.format("   |%s   Name%s: %s ", ChatColor.LIGHT_PURPLE, ChatColor.WHITE, p.getName()),
+                            " ",
+                            String.format(" %s%sStats ", ChatColor.LIGHT_PURPLE, ChatColor.BOLD),
+                            String.format("   |%s   Players%s: %d ", ChatColor.LIGHT_PURPLE, ChatColor.WHITE, players),
+                            String.format("   |%s   Ping%s: %d ", ChatColor.LIGHT_PURPLE, ChatColor.WHITE, p.getPing()),
+                            "    ",
+                            "     "
+                    });
+
             });
         }, 0, 20 * 2);
 
@@ -115,11 +128,48 @@ public final class XyPVP extends JavaPlugin {
                     Bukkit.getScheduler().runTask(this, () -> menuHandler.openFFAMenu(event.getPlayer()));
                 }, this, NPCSkin.ARMORED_STEVE));
 
+        ItemStack[] items = {
+                new ItemStack(Material.DIAMOND_SWORD),
+                new ItemStack(Material.GOLDEN_APPLE, 3),
+                new ItemStack(Material.BOW),
+                new ItemStack(Material.COBBLESTONE, 64),
+                new ItemStack(Material.ARROW, 64)
+        };
+
+        ItemStack[] armorItems = {
+                new ItemStack(Material.NETHERITE_BOOTS),
+                new ItemStack(Material.NETHERITE_LEGGINGS),
+                new ItemStack(Material.NETHERITE_CHESTPLATE),
+                new ItemStack(Material.NETHERITE_HELMET)
+        };
+
         npcs.add(new ClickableNPC(new Location(Bukkit.getWorld("world"), 118.5, 10, 125),
                 colorize(" "),
                 event -> {
-                    Bukkit.getScheduler().runTask(this, () -> event.getPlayer().sendMessage(colorize("&c&b?")));
+                    Bukkit.getScheduler().runTask(this, () -> {
+                        if (rankHandler.getRank(event.getPlayer()).permission.getPower() < RankPermission.VIP.getPower()) return;
+                        fights.add(new Bossfight(event.getPlayer(), items, armorItems, EntityType.WITHER));
+                    });
                 }, this, NPCSkin.QUESTION));
+
+        new MenuListener();
+
+//        Scoreboard board = scoreboardHandler.mainScoreboard;
+//        Team team = board.getTeam("test");
+//        if (team == null)
+//            team = board.registerNewTeam("test");
+//        team.setPrefix("the - ");
+//        team.addPlayer(Objects.requireNonNull(Bukkit.getPlayer("Xylight")));
+//        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+
+        if (config.getConfig().get("lobbyCoords") == null)
+            config.getConfig().set("lobbyCoords", lobbyHandler.lobbyCoords);
+        else {
+//            lobbyHandler.lobbyCoords = config.getConfig().getObject("lobbyCoords", lobbyHandler.lobbyCoords.getClass());
+//            System.out.println(lobbyHandler.lobbyCoords);
+//            config.save();
+        }
+
     }
 
     public static ProtocolManager getProtocol() {
@@ -132,5 +182,6 @@ public final class XyPVP extends JavaPlugin {
         Bukkit.getLogger().info(ChatColor.LIGHT_PURPLE + "[XyPVP] Plugin shutting down");
         Bukkit.getOnlinePlayers().forEach(p -> npcs.forEach(npc -> npc.hideNPC(p)));
         protocolManager.removePacketListeners(this);
+        config.save();
     }
 }

@@ -10,6 +10,7 @@ import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,11 +25,13 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.games.ffakits.abilities.Ability;
 import us.xylight.pvp.games.ffakits.FFAKit;
+import us.xylight.pvp.handlers.KitType;
 import us.xylight.pvp.util.Clamp;
 
 import java.util.*;
@@ -194,7 +197,16 @@ public class FFA implements Listener {
         event.setCancelled(true);
     }
 
-    public void joinFFA(Player p, FFAKit kit) {
+    public void joinFFA(HumanEntity p, KitType kit) {
+        if (!(p instanceof Player pl)) return;
+        pl.closeInventory();
+        pl.sendTitle("⇗", "", 10, 0, 10);
+        Bukkit.getScheduler().runTaskLater(XyPVP.getInstance(), () -> addPlayerToFFA(pl, kit), 10);
+    }
+
+    public void addPlayerToFFA(Player p, KitType kit) {
+
+        FFAKit ffaKit = kit.newKit(p);
 
         if (players.contains(p)) {
             resetOnDeath(p);
@@ -206,7 +218,7 @@ public class FFA implements Listener {
                 new Location(p.getWorld(), 177, 4, 98, 90, 0)
         };
 
-        kit.setContents(p);
+       ffaKit.setContents(p);
         p.getInventory().setItem(8, XyPVP.getInstance().menuHandler.getItem(new ItemStack(Material.BARRIER), ChatColor.translateAlternateColorCodes('&', "&cLeave"), "Leave the game."));
 
         p.teleport(spawnLocations[rand.nextInt(spawnLocations.length)]);
@@ -221,7 +233,7 @@ public class FFA implements Listener {
         }
 
         BossBar bar = Bukkit.createBossBar(ChatColor.translateAlternateColorCodes('&', String.format("◦ &bFFA &r ☈ &9%s &r ∯ &d%s",
-                kit.name,
+                ffaKit.name,
                 abilities.get(p.getUniqueId()) != null ? ability.getClass().getSimpleName() : "None")
         ), BarColor.YELLOW, BarStyle.SOLID);
 

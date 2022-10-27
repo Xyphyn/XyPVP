@@ -17,6 +17,9 @@ commands:
     usage: /setrank <player> <rank>
   crash:
     description: ???
-    usage: /crash <player>
+    usage: /crash <player>,
+  fallbackfont:
+    description: Falls back to regular text if resourcepack font fails to load.
+    usage: /fallbackfont
 depend:
   - ProtocolLib

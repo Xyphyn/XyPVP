@@ -1,8 +1,6 @@
 package us.xylight.pvp.handlers;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -19,7 +17,9 @@ import us.xylight.pvp.XyPVP;
 
 public class LobbyHandler implements Listener {
     // [x1, x2], [z1, z2]
-    public int[][][] lobbyCoords = {{{108, 124}, {121, 139}}};
+    private World w = Bukkit.getWorld("world");
+    public Location[][] lobbyCoords = {{new Location(w, 108, 0, 124), new Location(w, 121, 0, 139)}};
+    // {{{108, 124}, {121, 139}}}
     public ItemStack[] lobbyInv = new ItemStack[9];
     public boolean enabled = true;
 
@@ -50,10 +50,13 @@ public class LobbyHandler implements Listener {
         int playerX = player.getLocation().getBlockX();
         int playerZ = player.getLocation().getBlockZ();
 
-        for (int[][] lobbyCoord : XyPVP.getInstance().lobbyHandler.lobbyCoords)
-            if (playerX >= lobbyCoord[0][0] && playerX <= lobbyCoord[0][1])
-                if (playerZ >= lobbyCoord[1][0] && playerZ <= lobbyCoord[1][1])
+        for (Location[] lobbyCoord : XyPVP.getInstance().lobbyHandler.lobbyCoords)
+            if (playerX >= lobbyCoord[0].getBlockX() && playerZ >= lobbyCoord[0].getBlockZ())
+                if (playerX <= lobbyCoord[1].getBlockX() && playerZ <= lobbyCoord[1].getBlockZ())
                     return true;
+//            if (playerX >= lobbyCoord[0][0] && playerX <= lobbyCoord[0][1])
+//                if (playerZ >= lobbyCoord[1][0] && playerZ <= lobbyCoord[1][1])
+//                    return true;
 
         return false;
     }

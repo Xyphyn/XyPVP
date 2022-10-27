@@ -1,19 +1,23 @@
 package us.xylight.pvp.handlers;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.games.*;
 
 import java.util.*;
 
 public class QueueHandler {
     private static ArrayList<Game> games = new ArrayList<>();
-    private static Map<QueueTypes, Deque<Player>> queue = new HashMap<>();
+    private static Map<QueueType, Deque<Player>> queue = new HashMap<>();
 
     public QueueHandler() {
 
     }
-    public void queue(Player p, QueueTypes type) {
+    public void queue(HumanEntity pl, QueueType type) {
+        if (!(pl instanceof Player p)) return;
         p.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format("&aQueueing %s", type.toString().toLowerCase())));
 
         p.closeInventory();
@@ -39,7 +43,7 @@ public class QueueHandler {
         games.remove(game);
     }
 
-    public static Map<QueueTypes, Deque<Player>> getQueue() {
+    public static Map<QueueType, Deque<Player>> getQueue() {
         return queue;
     }
     public boolean inQueue(Player p) {
@@ -55,10 +59,12 @@ public class QueueHandler {
         }
     }
 
-    public void checkQueue(QueueTypes type, Player queuer) {
+    public void checkQueue(QueueType type, Player queuer) {
         Deque<Player> deque = queue.get(type);
         if (deque.size() >= type.maxPlayers) {
-            type.newGame(new ArrayList<>(deque));
+            deque.forEach(p -> p.sendTitle("⇗", "", 10, 10, 10));
+            ArrayList<Player> dqAsArray = new ArrayList<>(deque);
+            Bukkit.getScheduler().runTaskLater(XyPVP.getInstance(), () -> type.newGame(dqAsArray), 10);
             deque.clear();
         }
         queue.put(type, deque);

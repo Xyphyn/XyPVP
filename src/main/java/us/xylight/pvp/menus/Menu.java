@@ -18,8 +18,10 @@ public class Menu {
     public Inventory inventory;
     public String invName;
     public XyPVP plugin;
+    MenuItem[] items;
     public Menu(MenuItem[] items, int rows, Player player, String invName) {
         this.invName = invName;
+        this.items = items;
         inventory = Bukkit.createInventory(player, 9 * rows, this.invName);
 
         for (MenuItem item : items) inventory.setItem(item.location, item.item);
@@ -36,5 +38,13 @@ public class Menu {
 
         item.setItemMeta(meta);
         return item;
+    }
+
+    public MenuItem getItemAt(int location) {
+        for (MenuItem menuItem : items) {
+            if (menuItem.location == location) return menuItem;
+        }
+
+        return null;
     }
 }

@@ -23,6 +23,7 @@ import org.bukkit.util.Vector;
 import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.handlers.QueueHandler;
 import us.xylight.pvp.util.PlaceableBlock;
+import us.xylight.pvp.util.PlayerUtils;
 import us.xylight.pvp.util.WorkloadRunnable;
 
 import java.util.*;
@@ -30,7 +31,7 @@ import java.util.*;
 public class Game implements Listener {
     Random rand = new Random();
     BoundingBox arenaArea;
-    ItemStack[] gameInventory = new ItemStack[] {};
+    ItemStack[] gameInventory = new ItemStack[] { };
     public ArrayList<Player> players;
     public ArrayList<Block> trackedBlocks = new ArrayList<>();
     int x, y, z;
@@ -70,10 +71,9 @@ public class Game implements Listener {
             }
             if (timer[0] == 0) {
                 gameStarted = true;
-                 task.cancel();
+                task.cancel();
             }
-
-        }, 0, 20);
+        }, 20, 20);
     }
 
     public void unregisterEvents() {
@@ -88,11 +88,13 @@ public class Game implements Listener {
     }
 
     public void teleportPlayers(World world, int x, int y, int z) {
-
         int index = 0;
         for (Player player : players) {
             Location loc;
             loc = new Location(world, x + (index % 2 == 0 ? 5 : 45), y + 2, z + 12.5, (index % 2 == 0 ? -90f : 90f), 0f);
+
+            player.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 2, loc.getBlockZ()).setType(Material.BARRIER);
+
             player.teleport(loc);
             player.getInventory().setContents(gameInventory);
             index++;
@@ -136,6 +138,8 @@ public class Game implements Listener {
             Bukkit.getScheduler().runTaskLater(XyPVP.getInstance(), () -> {
                 resetOnDeath(team2, team1);
             }, 20 * 3);
+            team1.forEach(PlayerUtils::removeRedVignette);
+            team2.forEach(PlayerUtils::removeRedVignette);
 
 
         } else if (team2.stream().allMatch(Entity::isDead)) {
@@ -145,6 +149,8 @@ public class Game implements Listener {
             Bukkit.getScheduler().runTaskLater(XyPVP.getInstance(), () -> {
                 resetOnDeath(team1, team2);
             }, 20 * 3);
+            team1.forEach(PlayerUtils::removeRedVignette);
+            team2.forEach(PlayerUtils::removeRedVignette);
         }
     }
 
@@ -217,14 +223,17 @@ public class Game implements Listener {
     }
 
     public void buildArena(int passedX, int passedY, int passedZ) {
+
+
         Vector max = arenaArea.getMax();
         Vector min = arenaArea.getMin();
         World world = players.get(0).getWorld();
+        WorkloadRunnable r = XyPVP.getInstance().workloadRunnable;
         // Ground
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= min.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    new PlaceableBlock(world.getUID(), x, y, z, Material.GRASS_BLOCK).compute();
+                    r.addWorkload(new PlaceableBlock(world.getUID(), x, y, z, Material.GRASS_BLOCK));
                 }
             }
         }
@@ -233,7 +242,7 @@ public class Game implements Listener {
         for (int x = min.getBlockX(); x <= min.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS).compute();
+                    r.addWorkload(new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS));
                 }
             }
         }
@@ -242,7 +251,7 @@ public class Game implements Listener {
         for (int x = max.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS).compute();
+                    r.addWorkload(new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS));
                 }
             }
         }
@@ -251,7 +260,7 @@ public class Game implements Listener {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= min.getBlockZ(); z++) {
-                    new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS).compute();
+                    r.addWorkload(new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS));
                 }
             }
         }
@@ -260,7 +269,7 @@ public class Game implements Listener {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = max.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS).compute();
+                    r.addWorkload(new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS));
                 }
             }
         }
@@ -269,7 +278,7 @@ public class Game implements Listener {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = max.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS).compute();
+                    r.addWorkload(new PlaceableBlock(world.getUID(), x, y, z, Material.GLASS));
                 }
             }
         }

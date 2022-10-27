@@ -6,7 +6,7 @@ import us.xylight.pvp.games.*;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public enum QueueTypes {
+public enum QueueType {
     SURVIVAL(2, Survival::new),
     OP(2, us.xylight.pvp.games.OP::new),
     SUMO(2, Sumo::new),
@@ -15,7 +15,7 @@ public enum QueueTypes {
 
     public final int maxPlayers;
     public final Consumer<ArrayList<Player>> consumer;
-    QueueTypes(int maximumPlayers, Consumer<ArrayList<Player>> passedConsumer) {
+    QueueType(int maximumPlayers, Consumer<ArrayList<Player>> passedConsumer) {
         maxPlayers = maximumPlayers;
         this.consumer = passedConsumer;
     }

@@ -10,6 +10,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.xylight.pvp.commands.*;
+import us.xylight.pvp.enums.MenuType;
 import us.xylight.pvp.events.GeneralEvents;
 import us.xylight.pvp.games.FFA;
 import us.xylight.pvp.handlers.*;
@@ -97,11 +98,11 @@ public final class XyPVP extends JavaPlugin {
 
         npcs.add(new ClickableNPC(new Location(Bukkit.getWorld("world"), 115.5, 10, 125),
                 colorize("&b&lDuels"),
-                event -> Bukkit.getScheduler().runTask(this, () -> menuHandler.openMultiplayerMenu(event.getPlayer())), this, NPCSkin.ASTRONAUT));
+                event -> Bukkit.getScheduler().runTask(this, () -> menuHandler.openMenu(event.getPlayer(), MenuType.MULTIPLAYER)), this, NPCSkin.ASTRONAUT));
 
         npcs.add(new ClickableNPC(new Location(Bukkit.getWorld("world"), 112.5, 10, 125),
                 colorize("&b&lFFA"),
-                event -> Bukkit.getScheduler().runTask(this, () -> menuHandler.openFFAMenu(event.getPlayer())), this, NPCSkin.ARMORED_STEVE));
+                event -> Bukkit.getScheduler().runTask(this, () -> menuHandler.openMenu(event.getPlayer(), MenuType.FFA)), this, NPCSkin.ARMORED_STEVE));
 
         ItemStack[] items = {
                 new ItemStack(Material.DIAMOND_SWORD),

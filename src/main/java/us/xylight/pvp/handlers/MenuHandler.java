@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,9 +16,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.xylight.pvp.XyPVP;
+import us.xylight.pvp.enums.KitType;
+import us.xylight.pvp.enums.MenuType;
+import us.xylight.pvp.enums.QueueType;
 import us.xylight.pvp.games.ffakits.abilities.*;
-import us.xylight.pvp.listeners.MenuListener;
-import us.xylight.pvp.menus.Menu;
 import us.xylight.pvp.menus.MenuItem;
 
 import java.util.ArrayList;
@@ -25,15 +27,15 @@ import java.util.List;
 
 public class MenuHandler implements Listener {
     public XyPVP pl;
-    MenuItem[] ffaMenuItems;
+    public static MenuItem[] ffaMenuItems;
 
     ItemStack arenaItem = getItem(new ItemStack(Material.DIAMOND_SWORD), "&bFFA", "&8Fight in the colosseum!");
     ItemStack multiplayerItem = getItem(new ItemStack(Material.GOLDEN_SWORD), "&bMultiplayer", "&8Duels, minigames, and more");
     ItemStack invisibleExit = getItem(new ItemStack(Material.PAPER), "&cExit");
     ItemStack invisAbility = getItem(new ItemStack(Material.PAPER), "&bAbilities");
-    MenuItem[] gameMenuItems;
-    MenuItem[] multiplayerMenuItems;
-    MenuItem[] abilityMenuItems;
+    public static MenuItem[] gameMenuItems;
+    public static MenuItem[] multiplayerMenuItems;
+    public static MenuItem[] abilityMenuItems;
     public MenuHandler() {
         this.pl = XyPVP.getInstance();
         Bukkit.getPluginManager().registerEvents(this, this.pl);
@@ -46,9 +48,9 @@ public class MenuHandler implements Listener {
 
         gameMenuItems = new MenuItem[]{
                 new MenuItem(arenaItem, 1,
-                        event -> openFFAMenu((Player) event.getWhoClicked()) ),
+                        event -> openMenu(event.getWhoClicked(), MenuType.FFA)),
                 new MenuItem(multiplayerItem, 4,
-                        event -> openMultiplayerMenu((Player) event.getWhoClicked())),
+                        event -> openMenu(event.getWhoClicked(), MenuType.MULTIPLAYER)),
                 new MenuItem(getItem(invisibleExit, "&cExit"),  22,
                         event -> event.getWhoClicked().closeInventory())
         };
@@ -58,37 +60,34 @@ public class MenuHandler implements Listener {
                         event -> {
                         pl.ffa.abilities.put((event.getWhoClicked()).getUniqueId(), new None());
                         ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                        openAbilitiesMenu((Player) event.getWhoClicked());
+                        openMenu(event.getWhoClicked(), MenuType.ABILITIES);
                      }),
                 new MenuItem(getItem(new ItemStack(Material.RABBIT_FOOT), "&bSpeed", "&b+ &r&bSpeed", "&c&l- &r&cNo leggings"), 2,
                         event -> {
                             pl.ffa.abilities.put((event.getWhoClicked()).getUniqueId(), new Speed());
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                            openAbilitiesMenu((Player) event.getWhoClicked());
+                            openMenu(event.getWhoClicked(), MenuType.ABILITIES);
                         }),
                 new MenuItem(getItem(new ItemStack(Material.CHAINMAIL_CHESTPLATE), "&bTank", "&b+ &r&bProtection 3", "&c&l- &r&cSlowness"),  4,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Tank());
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                            openAbilitiesMenu((Player) event.getWhoClicked());
+                            openMenu(event.getWhoClicked(), MenuType.ABILITIES);
                         }),
                 new MenuItem(getItem(new ItemStack(Material.REDSTONE), "&bFrenzy", "&b+ &r&bStrength", "&c&l- &r&cNo chestplate", "&c&l- &r&cChainmail Leggings"),  6,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Frenzy());
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                            openAbilitiesMenu((Player) event.getWhoClicked());
+                            openMenu(event.getWhoClicked(), MenuType.ABILITIES);
                         }),
                 new MenuItem(getItem(new ItemStack(Material.DIAMOND_BOOTS), "&bJump", "&b+ &r&bJump Boost 3", "&c&l- &r&cNo boots", "&c&l- &r&cWeakness"),  8,
                         event -> {
                             pl.ffa.abilities.put(((Player) event.getWhoClicked()).getUniqueId(), new Jump());
                             ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                            openAbilitiesMenu((Player) event.getWhoClicked());
+                            openMenu(event.getWhoClicked(), MenuType.ABILITIES);
                         }),
                 new MenuItem(getItem(invisibleExit, "&cBack"),  22,
-                        event -> {
-                            ((Player) event.getWhoClicked()).playSound(event.getWhoClicked(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                            openFFAMenu((Player) event.getWhoClicked());
-                        })
+                        event -> openMenu(event.getWhoClicked(), MenuType.FFA))
         };
 
         multiplayerMenuItems = new MenuItem[] {
@@ -103,7 +102,7 @@ public class MenuHandler implements Listener {
                     event -> pl.queueHandler.queue(event.getWhoClicked(), QueueType.WALLS)),
             new MenuItem(getItem(new ItemStack(Material.IRON_AXE), "&bAxe", "&8Traditional axe PvP."), 8,
                     event -> pl.queueHandler.queue(event.getWhoClicked(), QueueType.AXE)),
-            new MenuItem(getItem(invisibleExit, "&cExit"), 22, event -> openGameMenu((Player) event.getWhoClicked()))
+            new MenuItem(getItem(invisibleExit, "&cExit"), 22, event -> openMenu(event.getWhoClicked(), MenuType.MAIN))
         };
 
         ffaMenuItems = new MenuItem[] {
@@ -127,8 +126,8 @@ public class MenuHandler implements Listener {
                 new MenuItem(
                         getItem(invisAbility, "&bAbilities", "&8Abilities can power you up- at a cost!"),
                         26,
-                        event -> openAbilitiesMenu((Player) event.getWhoClicked())),
-                new MenuItem(getItem(invisibleExit, "&cExit"), 22, event -> openGameMenu((Player) event.getWhoClicked()))
+                        event -> openMenu(event.getWhoClicked(), MenuType.ABILITIES)),
+                new MenuItem(getItem(invisibleExit, "&cExit"), 22, event -> openMenu(event.getWhoClicked(), MenuType.MAIN))
         };
     }
 
@@ -142,53 +141,36 @@ public class MenuHandler implements Listener {
         )) return;
 
         Player p = event.getPlayer();
-        if (LobbyHandler.inLobby(p)) openGameMenu(p);
+        if (LobbyHandler.inLobby(p)) openMenu(p, MenuType.MAIN);
     }
 
-    public void openGameMenu(Player p) {
-        Menu gameMenu = new Menu(gameMenuItems, 3, p, ChatColor.WHITE + "\uF808⫝̸");
-        MenuListener.addMenu(gameMenu);
-        p.openInventory(gameMenu.inventory);
-    }
+    public void openMenu(HumanEntity pl, MenuType type) {
+        if (!(pl instanceof Player p)) return;
 
-    public void openMultiplayerMenu(Player p) {
-        Menu multiplayerMenu = new Menu(multiplayerMenuItems, 3, p, ChatColor.WHITE + "\uF808₄");
-        MenuListener.addMenu(multiplayerMenu);
-        p.openInventory(multiplayerMenu.inventory);
-    }
-
-    public void openFFAMenu(Player p) {
-
-        Menu ffaMenu = new Menu(ffaMenuItems, 3, p, ChatColor.WHITE + "\uF808₃");
-        MenuListener.addMenu(ffaMenu);
-        p.openInventory(ffaMenu.inventory);
-    }
-
-    public void openAbilitiesMenu(Player p) {
-        for (MenuItem menuItem : abilityMenuItems) {
-            menuItem.item.removeEnchantment(Enchantment.DIG_SPEED);
-            if (pl.ffa.abilities.get(p.getUniqueId()) == null) {
-                if (menuItem.item.getType().equals(Material.BARRIER)) {
+        if (type.equals(MenuType.ABILITIES)) {
+            for (MenuItem menuItem : abilityMenuItems) {
+                menuItem.item.removeEnchantment(Enchantment.DIG_SPEED);
+                if (XyPVP.getInstance().ffa.abilities.get(p.getUniqueId()) == null) {
+                    if (menuItem.item.getType().equals(Material.BARRIER)) {
+                        menuItem.item.addUnsafeEnchantment(Enchantment.DIG_SPEED, 1);
+                        ItemMeta meta = menuItem.item.getItemMeta();
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        menuItem.item.setItemMeta(meta);
+                    }
+                    continue;
+                }
+                if (menuItem.item.getType().equals(XyPVP.getInstance().ffa.abilities.get(p.getUniqueId()).item.getType())) {
                     menuItem.item.addUnsafeEnchantment(Enchantment.DIG_SPEED, 1);
                     ItemMeta meta = menuItem.item.getItemMeta();
                     meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     menuItem.item.setItemMeta(meta);
+                } else {
+                    menuItem.item.removeEnchantment(Enchantment.DIG_SPEED);
                 }
-                continue;
-            }
-            if (menuItem.item.getType().equals(pl.ffa.abilities.get(p.getUniqueId()).item.getType())) {
-                menuItem.item.addUnsafeEnchantment(Enchantment.DIG_SPEED, 1);
-                ItemMeta meta = menuItem.item.getItemMeta();
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                menuItem.item.setItemMeta(meta);
-            } else {
-                menuItem.item.removeEnchantment(Enchantment.DIG_SPEED);
             }
         }
 
-        Menu abilityMenu = new Menu(abilityMenuItems, 3, p, ChatColor.WHITE + "\uF808₂");
-        MenuListener.addMenu(abilityMenu);
-        p.openInventory(abilityMenu.inventory);
+        type.createMenu(p);
     }
 
     @EventHandler

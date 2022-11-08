@@ -27,7 +27,7 @@ import org.bukkit.potion.PotionEffect;
 import us.xylight.pvp.XyPVP;
 import us.xylight.pvp.games.ffakits.FFAKit;
 import us.xylight.pvp.games.ffakits.abilities.Ability;
-import us.xylight.pvp.handlers.KitType;
+import us.xylight.pvp.enums.KitType;
 import us.xylight.pvp.util.Clamp;
 
 import java.util.*;
@@ -69,10 +69,8 @@ public class FFA implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && players.contains(event.getEntity())) {
-            Player p = (Player) event.getEntity();
-            cooldowns.put(p.getUniqueId(), System.currentTimeMillis() + 10000);
-        }
+        if (!(event.getEntity() instanceof Player p) || !players.contains(p)) return;
+        cooldowns.put(p.getUniqueId(), System.currentTimeMillis() + 10000);
     }
 
     @EventHandler
@@ -126,36 +124,29 @@ public class FFA implements Listener {
 
     @EventHandler
     public void onRightClick(PlayerInteractEvent event) {
-        try {
-            //  || LobbyHandler.inLobby(event.getPlayer())
-            if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && event.hasItem()) {
-                if (event.getItem().hasItemMeta()) {
-                    if (event.getItem().getItemMeta().hasDisplayName()) {
-                        if (event.getItem().getItemMeta().getDisplayName().equalsIgnoreCase("§cLeave")) {
-                            if (cooldowns.get(event.getPlayer().getUniqueId()) == null) {
-                                event.setCancelled(true);
-                                resetOnDeath(event.getPlayer());
-                                return;
-                            }
-                            if (cooldowns.containsKey(event.getPlayer().getUniqueId()) && (cooldowns.get(event.getPlayer().getUniqueId()) <= System.currentTimeMillis())) {
-                                event.setCancelled(true);
-                                resetOnDeath(event.getPlayer());
-                            }
-                            else {
-                                event.getPlayer().playNote(event.getPlayer().getLocation(), Instrument.BASS_GUITAR, Note.natural(0, Note.Tone.A));
-                                event.getPlayer().sendMessage(String.format("⛃%s You are in combat! You can leave in %d seconds", ChatColor.RED, ( Math.round((cooldowns.get(event.getPlayer().getUniqueId()) - System.currentTimeMillis()) / 1000f))));
-                                event.setCancelled(true);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (NullPointerException e) { e.printStackTrace(); }
+        if ((event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) || !event.hasItem()) return;
+        if (!event.getItem().hasItemMeta()) return;
+        if (!event.getItem().getItemMeta().hasDisplayName()) return;
+        if (!event.getItem().getItemMeta().getDisplayName().equalsIgnoreCase("§cLeave")) return;
+
+        if (cooldowns.get(event.getPlayer().getUniqueId()) == null) {
+            event.setCancelled(true);
+            resetOnDeath(event.getPlayer());
+            return;
+        }
+        if (cooldowns.containsKey(event.getPlayer().getUniqueId()) && (cooldowns.get(event.getPlayer().getUniqueId()) <= System.currentTimeMillis())) {
+            event.setCancelled(true);
+            resetOnDeath(event.getPlayer());
+        } else {
+            event.getPlayer().playNote(event.getPlayer().getLocation(), Instrument.BASS_GUITAR, Note.natural(0, Note.Tone.A));
+            event.getPlayer().sendMessage(String.format("⛃%s You are in combat! You can leave in %d seconds", ChatColor.RED, ( Math.round((cooldowns.get(event.getPlayer().getUniqueId()) - System.currentTimeMillis()) / 1000f))));
+            event.setCancelled(true);
+        }
     }
 
     public void resetOnDeath(Player p) {
         players.remove(p);
-        killMap.remove(p);
+        killMap.remove(p.getUniqueId());
         cooldowns.remove(p.getUniqueId());
         for (PotionEffect effect : p.getActivePotionEffects()) {
             p.removePotionEffect(effect.getType());

@@ -1,4 +1,4 @@
-package us.xylight.pvp.handlers;
+package us.xylight.pvp.enums;
 
 import org.bukkit.entity.Player;
 import us.xylight.pvp.games.ffakits.*;

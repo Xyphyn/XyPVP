@@ -23,7 +23,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import us.xylight.pvp.XyPVP;
-import us.xylight.pvp.commands.FallbackFont;
 import us.xylight.pvp.games.Game;
 import us.xylight.pvp.handlers.QueueHandler;
 import us.xylight.pvp.ranks.RankHandler;
@@ -93,8 +92,7 @@ public class GeneralEvents implements Listener {
                     String.format("%s %s‡ %s",
                             event.getEntity().getKiller().getDisplayName(),
                             ChatColor.RESET,
-                            event.getEntity().getDisplayName())
-            );
+                            event.getEntity().getDisplayName()));
         else if (event.getDeathMessage().equalsIgnoreCase(event.getEntity().getName() + " died")) {
             event.setDeathMessage(String.format("%s %s‡ %s",
                     event.getEntity().getDisplayName(),
@@ -115,8 +113,10 @@ public class GeneralEvents implements Listener {
 
         while (matcher.find()) {
             String color = message.substring(matcher.start(), matcher.end());
-            if (!color.equals("") && !(XyPVP.getInstance().rankHandler.getRank(event.getPlayer()).permission.getPower() >= RankPermission.VIP.getPower())) {
-                event.getPlayer().sendMessage(ChatColor.GRAY + "Hex colors are only available to those with VIP permission or higher.");
+            if (!color.equals("") && !(XyPVP.getInstance().rankHandler.getRank(event.getPlayer()).permission
+                    .getPower() >= RankPermission.VIP.getPower())) {
+                event.getPlayer().sendMessage(
+                        ChatColor.GRAY + "Hex colors are only available to those with VIP permission or higher.");
                 break;
             }
             message = message.replace(color, net.md_5.bungee.api.ChatColor.of(color) + "");
@@ -125,7 +125,8 @@ public class GeneralEvents implements Listener {
 
         for (String str : blackList) {
             if (event.getMessage().contains(str)) {
-                event.getPlayer().sendMessage(colorize("⛃ &cYour message contains characters/strings that are blacklisted."));
+                event.getPlayer()
+                        .sendMessage(colorize("⛃ &cYour message contains characters/strings that are blacklisted."));
                 event.setCancelled(true);
                 return;
             }
@@ -145,24 +146,27 @@ public class GeneralEvents implements Listener {
                 handler.getRank(event.getPlayer()).chatColor,
                 message);
 
-        for (Player p : event.getRecipients()) {
-            if (FallbackFont.enabled.get(p) == null) return;
-            if (FallbackFont.enabled.get(p)) {
-                String fallbackMessageFormat = messageFormat;
-                for (Map.Entry<String, String> entry : fallbackFont.entrySet()) {
-                    fallbackMessageFormat = fallbackMessageFormat.replace(entry.getKey(), entry.getValue());
-                }
-                event.getRecipients().remove(p);
-                p.sendMessage(fallbackMessageFormat);
-            }
-        }
+        // event.getRecipients().removeIf(p -> { if (FallbackFont.enabled.get(p) ==
+        // null) { return false; } return FallbackFont.enabled.get(p); });
+        // for (Player p : event.getRecipients()) {
+        // if (FallbackFont.enabled.get(p) == null) return;
+        // if (FallbackFont.enabled.get(p)) {
+        // String fallbackMessageFormat = messageFormat;
+        // for (Map.Entry<String, String> entry : fallbackFont.entrySet()) {
+        // fallbackMessageFormat = fallbackMessageFormat.replace(entry.getKey(),
+        // entry.getValue());
+        // }
+        // p.sendMessage(fallbackMessageFormat);
+        // }
+        // }
 
         event.setFormat(messageFormat);
     }
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-//        event.getPlayer().playSound(event.getPlayer().getLocation(), "xypvp.death", 1.0f, 1.0f);
+        // event.getPlayer().playSound(event.getPlayer().getLocation(), "xypvp.death",
+        // 1.0f, 1.0f);
         event.getPlayer().sendTitle("⇗", "", 0, 20, 20);
         event.setRespawnLocation(event.getPlayer().getWorld().getSpawnLocation());
         event.getPlayer().setRotation(180, 0);
@@ -172,7 +176,8 @@ public class GeneralEvents implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof LivingEntity le) {
-            if (!(le instanceof Player)) return;
+            if (!(le instanceof Player))
+                return;
             if (((Player) event.getEntity()).getHealth() <= 8) {
                 XyPVP.getInstance().getLogger().info("Adding vignette");
                 PlayerUtils.addRedVignette(((Player) event.getEntity()));

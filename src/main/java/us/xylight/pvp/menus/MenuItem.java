@@ -14,24 +14,11 @@ public class MenuItem implements Listener {
         this.item = item;
         this.location = location;
         this.consumer = consumer;
-//        Bukkit.getPluginManager().registerEvents(this, XyPVP.getInstance());
     }
 
     public void onClick(InventoryClickEvent event) {
         consumer.accept(event);
     }
-
-//    @EventHandler
-//    public void clickEvent(InventoryClickEvent event) {
-//
-//        if (event.getCurrentItem() == null) return;
-//        if (!event.getCurrentItem().hasItemMeta()) return;
-//        if (!event.getCurrentItem().getItemMeta().hasDisplayName()) return;
-//        if (event.getCurrentItem().equals(this.item)) {
-//            onClick(event);
-//            event.setCancelled(true);
-//        }
-//    }
 
     public void closed() {
 

@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import us.xylight.pvp.XyPVP;
+import us.xylight.pvp.enums.QueueType;
 import us.xylight.pvp.games.Game;
 
 import java.util.*;
